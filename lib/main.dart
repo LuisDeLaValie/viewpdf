@@ -1,22 +1,30 @@
 import 'package:flutter/material.dart';
- 
-void main() => runApp(MyApp());
- 
-class MyApp extends StatelessWidget {
+import 'package:sembast/sembast.dart';
+import 'package:sembast/timestamp.dart';
+import 'package:viewPDF/data/ListaData.dart';
+
+import 'data/db.dart';
+import 'view/estanteria.dart';
+
+main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await DB.instance.init();
+
+  EstanteriaDB.instance.eliminarTemporal();
+  runApp(MyApp());
+}
+
+class MyApp extends StatefulWidget {
+  @override
+  _MyAppState createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Material App',
-      home: Scaffold(
-        appBar: AppBar(
-          title: Text('Material App Bar'),
-        ),
-        body: Center(
-          child: Container(
-            child: Text('Hello World'),
-          ),
-        ),
-      ),
+      home: Stanteria(),
     );
   }
 }

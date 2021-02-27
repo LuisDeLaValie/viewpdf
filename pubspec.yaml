@@ -23,6 +23,14 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  path: ^1.7.0
+  path_provider: ^1.6.14
+  gx_file_picker: ^1.9.0+2
+  sembast: ^2.4.7+6
+  flutter_pdfview: ^1.0.4
+  syncfusion_flutter_pdfviewer: ^18.4.41-beta
+
+
 
 
   # The following adds the Cupertino Icons font to your application.
