@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
@@ -9,9 +8,8 @@ import 'package:sembast/sembast.dart';
 import 'package:sembast/timestamp.dart';
 import 'package:viewPDF/data/ListaData.dart';
 import 'package:viewPDF/view/widget/etiquetea.dart';
-import 'package:viewPDF/widget/Buscador.dart';
 
-import 'MyPdfView.dart';
+import 'PDFVIEW/MyPdfView.dart';
 
 class Stanteria extends StatefulWidget {
   const Stanteria({Key key}) : super(key: key);
@@ -40,7 +38,6 @@ class _StanteriaState extends State<Stanteria> {
       body: Container(
         child: Column(
           children: [
-            
             FutureBuilder<List<PDFModel>>(
               future: EstanteriaDB.instance.listar(finder: ordenar),
               builder: (BuildContext context,
@@ -53,20 +50,21 @@ class _StanteriaState extends State<Stanteria> {
                   List<PDFModel> lista = snapshot.data;
 
                   return Container(
-                    height: MediaQuery.of(context).size.height-150,
+                    height: MediaQuery.of(context).size.height - 150,
                     child: ListView.builder(
                       itemCount: lista.length ?? 0,
                       itemBuilder: (__, i) => ListTile(
                         title: Text(lista[i].name),
                         onTap: () {
                           lista[i].actualizado = Timestamp.now();
+
                           // lista[i].isTemporal = false;
                           EstanteriaDB.instance.actualizar(lista[i]);
                           Navigator.push(
                             this.context,
                             MaterialPageRoute(
                               builder: (context) => MyPDF(
-                                id: lista[i].id,
+                                pdf: lista[i],
                               ),
                             ),
                           ).then((value) {
@@ -102,7 +100,7 @@ class _StanteriaState extends State<Stanteria> {
         type: FileType.custom, allowedExtensions: ['pdf']);
     String name = basename(file.path);
 
-    int id = await EstanteriaDB.instance.add(PDFModel(
+    PDFModel pdf = await EstanteriaDB.instance.add(PDFModel(
       page: 0,
       path: file.path,
       name: name,
@@ -111,10 +109,7 @@ class _StanteriaState extends State<Stanteria> {
 
     Navigator.push(
       this.context,
-      MaterialPageRoute(
-          builder: (context) => MyPDF(
-                id: id,
-              )),
+      MaterialPageRoute(builder: (context) => MyPDF(pdf: pdf)),
     ).then((value) {
       ordenarasendente();
       setState(() {});
@@ -166,9 +161,4 @@ class _StanteriaState extends State<Stanteria> {
       setState(() {});
     });
   }
-
-Future<List<String>> res()async{
-return["laslsaa","laslsa"];
-}
-
 }

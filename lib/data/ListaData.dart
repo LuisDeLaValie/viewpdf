@@ -13,15 +13,16 @@ class PDFModel {
   String name;
   Timestamp actualizado;
   bool isTemporal;
+  double zoom;
 
-  PDFModel({
-    this.id,
-    @required this.name,
-    @required this.path,
-    @required this.actualizado,
-    this.page = 0,
-    this.isTemporal = true,
-  });
+  PDFModel(
+      {this.id,
+      @required this.name,
+      @required this.path,
+      @required this.actualizado,
+      this.page = 0,
+      this.isTemporal = true,
+      this.zoom = 1});
 
   static PDFModel fromJson(Map<String, dynamic> map) {
     return PDFModel(
@@ -31,6 +32,7 @@ class PDFModel {
       name: map['name'],
       actualizado: map['actualizado'],
       isTemporal: map['isTemporal'],
+      zoom: map['zoom'],
     );
   }
 
@@ -41,7 +43,8 @@ class PDFModel {
       'path': this.path,
       'name': this.name,
       'actualizado': this.actualizado,
-      'isTemporal': this.isTemporal
+      'isTemporal': this.isTemporal,
+      'zoom': this.zoom
     };
   }
 }
@@ -66,10 +69,11 @@ class EstanteriaDB {
         .toList();
   }
 
-  Future<int> add(PDFModel pdf) async {
+  Future<PDFModel> add(PDFModel pdf) async {
     pdf.id = lenggth + 1;
-    await this._store.record("${pdf.id}").put(this._db, pdf.toJson());
-    return pdf.id;
+    PDFModel nuevoPDF = PDFModel.fromJson(
+        await this._store.record("${pdf.id}").put(this._db, pdf.toJson()));
+    return nuevoPDF;
   }
 
   Future<PDFModel> traer(int id) async {
@@ -91,7 +95,7 @@ class EstanteriaDB {
 
   Future<int> eliminarTemporal() async {
     DateTime hoy = new DateTime.now();
-    DateTime semana = hoy.subtract(Duration(days: 7));
+    DateTime semana = hoy.subtract(Duration(days: 3));
     Timestamp nueva = Timestamp.fromDateTime(semana);
 
     int eliminados = await this.eliminar(

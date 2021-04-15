@@ -5,16 +5,18 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_pdfview/flutter_pdfview.dart';
+
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sembast/sembast.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 import 'package:viewPDF/data/ListaData.dart';
 
+import 'zoom.dart';
+
 class MyPDF extends StatefulWidget {
-  final int id;
-  MyPDF({Key key, this.id}) : super(key: key);
+  final PDFModel pdf;
+  MyPDF({Key key, @required this.pdf}) : super(key: key);
 
   @override
   _MyPDFState createState() => _MyPDFState();
@@ -24,17 +26,20 @@ class _MyPDFState extends State<MyPDF> {
   PDFModel pdf;
   TextEditingController pageControler;
   PdfViewerController pdfViewController;
+
   bool _mostrarAppbar = true;
   int allpague = 0;
-  bool isTemporal = true;
 
   @override
   void initState() {
-    pageControler = new TextEditingController();
+    this.pdf = widget.pdf;
 
+    pageControler = new TextEditingController();
     pdfViewController = PdfViewerController();
+
     pdfViewController.addListener(({property}) {
-      log("property: $property");
+      log("property: $property.");
+
       if (property == "pageCount") {
         pageControler.text = "${pdf.page}";
         pdfViewController.jumpToPage(pdf.page);
@@ -42,9 +47,21 @@ class _MyPDFState extends State<MyPDF> {
         setState(() {
           allpague = pdfViewController.pageCount;
         });
+      } else if (property == "zoomLevel") {
+        // pdfViewController.
+        pdf.zoom = pdfViewController.zoomLevel;
+        EstanteriaDB.instance.actualizar(pdf);
+        log("ZOOM :: " + pdfViewController.zoomLevel.toString());
       }
     });
     super.initState();
+  }
+
+  void cambiarZoom(bool sumres) {
+    if (sumres)
+      pdfViewController.zoomLevel += 0.25;
+    else
+      pdfViewController.zoomLevel -= 0.25;
   }
 
   @override
@@ -75,47 +92,40 @@ class _MyPDFState extends State<MyPDF> {
                 ),
               ),
               actions: [
+                ZoomPage(
+                  zoomChange: cambiarZoom,
+                  initZoom: pdf.zoom,
+                ),
                 myPopMenu(),
               ],
             )
           : null,
       body: Container(
-        child: FutureBuilder(
-          future: _getpdf(),
-          builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
-            if (snapshot.data == null) {
-              return Center(
-                child: CircularProgressIndicator(),
-              );
-            } else {
-              return SfPdfViewer.file(
-                File(pdf.path),
-                initialZoomLevel: 1.1,
-                controller: pdfViewController,
-                onPageChanged: (chane) {
-                  pageControler.text = "${pdfViewController.pageNumber}";
-                  pdf.page = pdfViewController.pageNumber;
-                  EstanteriaDB.instance.actualizar(pdf);
-                  log("${chane.newPageNumber}");
-                },
-                onDocumentLoaded: (load) {
-                  log(load.toString());
-                },
-                onDocumentLoadFailed: (fail) {
-                  log(fail.toString());
-                },
-              );
-            }
+        child: SfPdfViewer.file(
+          File(pdf.path),
+          initialZoomLevel: pdf.zoom,
+          controller: pdfViewController,
+          onPageChanged: (chane) {
+            pageControler.text = "${pdfViewController.pageNumber}";
+            pdf.page = pdfViewController.pageNumber;
+            EstanteriaDB.instance.actualizar(pdf);
+            log("onPageChanged :: " + "${chane.newPageNumber}");
+          },
+          onDocumentLoaded: (load) {
+            log("onDocumentLoaded :: " + load.toString());
+          },
+          onDocumentLoadFailed: (fail) {
+            log("onDocumentLoadFailed :: " + fail.toString());
+          },
+          onTextSelectionChanged: (asa) {
+            log("onTextSelectionChanged :: " + asa.toString());
+          },
+          onZoomLevelChanged: (ash) {
+            log("onZoomLevelChanged :: " + ash.toString());
           },
         ),
       ),
     );
-  }
-
-  Future<int> _getpdf() async {
-    pdf = await EstanteriaDB.instance.traer(widget.id);
-    isTemporal = pdf.isTemporal;
-    return 1;
   }
 
   Widget myPopMenu() {
@@ -130,7 +140,7 @@ class _MyPDFState extends State<MyPDF> {
         }
       },
       itemBuilder: (context) => [
-        (isTemporal)
+        (pdf.isTemporal)
             ? PopupMenuItem(
                 value: 1,
                 child: Row(
@@ -142,7 +152,10 @@ class _MyPDFState extends State<MyPDF> {
                         color: Colors.grey,
                       ),
                     ),
-                    Text('Guardar',style: TextStyle(fontSize: 10),)
+                    Text(
+                      'Guardar',
+                      style: TextStyle(fontSize: 10),
+                    )
                   ],
                 ),
               )
@@ -158,7 +171,10 @@ class _MyPDFState extends State<MyPDF> {
                   color: Colors.grey,
                 ),
               ),
-              Text('ver Ubicacion.',style: TextStyle(fontSize: 12),)
+              Text(
+                'ver Ubicacion.',
+                style: TextStyle(fontSize: 12),
+              )
             ],
           ),
         ),
@@ -173,7 +189,10 @@ class _MyPDFState extends State<MyPDF> {
                   color: Colors.grey,
                 ),
               ),
-              Text('Eliminar.',style: TextStyle(fontSize: 12),)
+              Text(
+                'Eliminar.',
+                style: TextStyle(fontSize: 12),
+              )
             ],
           ),
         ),
@@ -192,7 +211,7 @@ class _MyPDFState extends State<MyPDF> {
     pdf.path = file2.path;
 
     await EstanteriaDB.instance.actualizar(pdf);
-    pdf = await EstanteriaDB.instance.traer(widget.id);
+    pdf = await EstanteriaDB.instance.traer(pdf.id);
     await file.delete();
     setState(() {});
   }

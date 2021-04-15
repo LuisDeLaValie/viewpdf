@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:sembast/sembast.dart';
-import 'package:sembast/timestamp.dart';
 import 'package:viewPDF/data/ListaData.dart';
 
 import 'data/db.dart';
