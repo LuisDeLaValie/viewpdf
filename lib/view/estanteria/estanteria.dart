@@ -1,15 +1,15 @@
 import 'dart:io';
 
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:gx_file_picker/gx_file_picker.dart';
+// import 'package:gx_file_picker/gx_file_picker.dart';
 import 'package:path/path.dart';
 import 'package:sembast/sembast.dart';
 import 'package:sembast/timestamp.dart';
 import 'package:viewPDF/data/ListaData.dart';
-import 'package:viewPDF/view/widget/etiquetea.dart';
-
-import 'PDFVIEW/MyPdfView.dart';
+import '../PDFVIEW/MyPdfView.dart';
+import 'widget/etiquetea.dart';
 
 class Stanteria extends StatefulWidget {
   const Stanteria({Key key}) : super(key: key);
@@ -96,24 +96,32 @@ class _StanteriaState extends State<Stanteria> {
   }
 
   void getPDF() async {
-    File file = await FilePicker.getFile(
-        type: FileType.custom, allowedExtensions: ['pdf']);
-    String name = basename(file.path);
-
-    PDFModel pdf = await EstanteriaDB.instance.add(PDFModel(
-      page: 0,
-      path: file.path,
-      name: name,
-      actualizado: Timestamp.now(),
-    ));
-
-    Navigator.push(
-      this.context,
-      MaterialPageRoute(builder: (context) => MyPDF(pdf: pdf)),
-    ).then((value) {
-      ordenarasendente();
-      setState(() {});
-    });
+    FilePickerResult result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['pdf'],
+    );
+    // File file = await FilePicker.getFile(
+    //     type: FileType.custom, allowedExtensions: ['pdf']);
+    if (result != null) {
+      PDFModel pdf;
+      for (var file in result.files) {
+        pdf = await EstanteriaDB.instance.add(PDFModel(
+          page: 0,
+          path: file.path,
+          name: file.name,
+          actualizado: Timestamp.now(),
+        ));
+      }
+      if (result.paths.length == 1) {
+        Navigator.push(
+          this.context,
+          MaterialPageRoute(builder: (context) => MyPDF(pdf: pdf)),
+        ).then((value) {});
+      } else {
+        ordenarasendente();
+        setState(() {});
+      }
+    }
   }
 
   void ordenarasendente() {
