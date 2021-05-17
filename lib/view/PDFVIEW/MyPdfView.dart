@@ -10,8 +10,9 @@ import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sembast/sembast.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
-import 'package:viewPDF/data/ListaData.dart';
+import 'package:viewPDF/DB/ListaData.dart';
 
+import 'package:viewPDF/model/PDFModel.dart';
 import 'zoom.dart';
 
 class MyPDF extends StatefulWidget {

@@ -1,29 +1,55 @@
-import 'dart:io';
-
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-// import 'package:gx_file_picker/gx_file_picker.dart';
-import 'package:path/path.dart';
 import 'package:sembast/sembast.dart';
 import 'package:sembast/timestamp.dart';
-import 'package:viewPDF/data/ListaData.dart';
+import 'package:viewPDF/DB/ListaData.dart';
+import 'package:viewPDF/model/PDFModel.dart';
+import 'package:viewPDF/providers/EstanteriaProvider.dart';
+import 'package:viewPDF/view/estanteria/widget/ElemntoEstanteria.dart';
 import '../PDFVIEW/MyPdfView.dart';
-import 'widget/etiquetea.dart';
 
-class Stanteria extends StatefulWidget {
-  const Stanteria({Key key}) : super(key: key);
+import 'package:provider/provider.dart';
+
+class EstanteriaScreen extends StatelessWidget {
+  const EstanteriaScreen({Key key}) : super(key: key);
 
   @override
-  _StanteriaState createState() => _StanteriaState();
+  Widget build(BuildContext context) {
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider<EstanteriaProvider>(
+            create: (_) => EstanteriaProvider()),
+      ],
+      child: _EstanteriaProvider(),
+    );
+  }
 }
 
-class _StanteriaState extends State<Stanteria> {
+class _EstanteriaProvider extends StatelessWidget {
+  const _EstanteriaProvider({Key key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final provider = Provider.of<EstanteriaProvider>(context);
+    return _EstanteriaScreen(provider);
+  }
+}
+
+class _EstanteriaScreen extends StatefulWidget {
+  final EstanteriaProvider provider;
+  const _EstanteriaScreen(this.provider, {Key key}) : super(key: key);
+
+  @override
+  __EstanteriaScreenState createState() => __EstanteriaScreenState();
+}
+
+class __EstanteriaScreenState extends State<_EstanteriaScreen> {
   Finder ordenar;
   @override
   void initState() {
     super.initState();
-    ordenarasendente();
+    widget.provider.init();
   }
 
   @override
@@ -35,56 +61,25 @@ class _StanteriaState extends State<Stanteria> {
           myPopMenu(),
         ],
       ),
-      body: Container(
-        child: Column(
-          children: [
-            FutureBuilder<List<PDFModel>>(
-              future: EstanteriaDB.instance.listar(finder: ordenar),
-              builder: (BuildContext context,
-                  AsyncSnapshot<List<PDFModel>> snapshot) {
-                if (snapshot.data == null) {
-                  return Center(
-                    child: CircularProgressIndicator(),
-                  );
-                } else {
-                  List<PDFModel> lista = snapshot.data;
+      body: FutureBuilder<List<PDFModel>>(
+        future: EstanteriaDB.instance.listar(finder: ordenar),
+        builder:
+            (BuildContext context, AsyncSnapshot<List<PDFModel>> snapshot) {
+          if (snapshot.data == null) {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          } else {
+            List<PDFModel> lista = snapshot.data;
 
-                  return Container(
-                    height: MediaQuery.of(context).size.height - 150,
-                    child: ListView.builder(
-                      itemCount: lista.length ?? 0,
-                      itemBuilder: (__, i) => ListTile(
-                        title: Text(lista[i].name),
-                        onTap: () {
-                          lista[i].actualizado = Timestamp.now();
-
-                          // lista[i].isTemporal = false;
-                          EstanteriaDB.instance.actualizar(lista[i]);
-                          Navigator.push(
-                            this.context,
-                            MaterialPageRoute(
-                              builder: (context) => MyPDF(
-                                pdf: lista[i],
-                              ),
-                            ),
-                          ).then((value) {
-                            ordenarasendente();
-                            setState(() {});
-                          });
-                        },
-                        trailing: (lista[i].isTemporal)
-                            ? Etiqueta(
-                                texto: "Temporal",
-                              )
-                            : null,
-                      ),
-                    ),
-                  );
-                }
-              },
-            ),
-          ],
-        ),
+            return Container(
+              child: ListView.builder(
+                itemCount: lista.length ?? 0,
+                itemBuilder: (__, i) => EstanteriaAparador(item: lista[i]),
+              ),
+            );
+          }
+        },
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
@@ -98,10 +93,10 @@ class _StanteriaState extends State<Stanteria> {
   void getPDF() async {
     FilePickerResult result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
+      allowMultiple: true,
       allowedExtensions: ['pdf'],
     );
-    // File file = await FilePicker.getFile(
-    //     type: FileType.custom, allowedExtensions: ['pdf']);
+
     if (result != null) {
       PDFModel pdf;
       for (var file in result.files) {
@@ -118,24 +113,16 @@ class _StanteriaState extends State<Stanteria> {
           MaterialPageRoute(builder: (context) => MyPDF(pdf: pdf)),
         ).then((value) {});
       } else {
-        ordenarasendente();
-        setState(() {});
+        widget.provider.ordernarFiltrar();
       }
     }
-  }
-
-  void ordenarasendente() {
-    ordenar = Finder(sortOrders: [
-      SortOrder('isTemporal', false),
-      SortOrder('actualizado', false),
-    ]);
   }
 
   Widget myPopMenu() {
     return PopupMenuButton(
       onSelected: (value) {
         if (value == 1) {
-          limpiarlista();
+          widget.provider.limpiarlista();
         }
       },
       itemBuilder: (context) => [
@@ -156,17 +143,5 @@ class _StanteriaState extends State<Stanteria> {
         ),
       ],
     );
-  }
-
-  void limpiarlista() {
-    EstanteriaDB.instance
-        .eliminar(
-      finder: Finder(
-        filter: Filter.equals('isTemporal', true),
-      ),
-    )
-        .then((value) {
-      setState(() {});
-    });
   }
 }

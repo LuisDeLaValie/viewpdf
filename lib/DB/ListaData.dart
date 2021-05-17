@@ -1,53 +1,10 @@
 import 'dart:developer';
 
-import 'package:flutter/cupertino.dart';
 import 'package:sembast/sembast.dart';
 import 'package:sembast/timestamp.dart';
+import 'package:viewPDF/model/PDFModel.dart';
 
 import 'db.dart';
-
-class PDFModel {
-  int id;
-  int page;
-  String path;
-  String name;
-  Timestamp actualizado;
-  bool isTemporal;
-  double zoom;
-
-  PDFModel(
-      {this.id,
-      @required this.name,
-      @required this.path,
-      @required this.actualizado,
-      this.page = 0,
-      this.isTemporal = true,
-      this.zoom = 1});
-
-  static PDFModel fromJson(Map<String, dynamic> map) {
-    return PDFModel(
-      id: map['id'],
-      page: map['page'],
-      path: map['path'],
-      name: map['name'],
-      actualizado: map['actualizado'],
-      isTemporal: map['isTemporal'],
-      zoom: map['zoom'],
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'id': this.id,
-      'page': this.page,
-      'path': this.path,
-      'name': this.name,
-      'actualizado': this.actualizado,
-      'isTemporal': this.isTemporal,
-      'zoom': this.zoom
-    };
-  }
-}
 
 class EstanteriaDB {
   EstanteriaDB._internal();
@@ -58,6 +15,10 @@ class EstanteriaDB {
   final StoreRef<String, Map> _store = StoreRef<String, Map>("estanteria");
 
   int lenggth = 0;
+
+  Future<void> init() async {
+    lenggth = (await listar()).length;
+  }
 
   Future<List<PDFModel>> listar({Finder finder}) async {
     List<RecordSnapshot<String, Map>> snapshots =
@@ -73,6 +34,7 @@ class EstanteriaDB {
     pdf.id = lenggth + 1;
     PDFModel nuevoPDF = PDFModel.fromJson(
         await this._store.record("${pdf.id}").put(this._db, pdf.toJson()));
+    lenggth++;
     return nuevoPDF;
   }
 
@@ -106,8 +68,9 @@ class EstanteriaDB {
         ]),
       ),
     );
-
+    lenggth -= eliminados;
     log("Se eliminaron $eliminados temporales");
+
     return eliminados;
   }
 }
