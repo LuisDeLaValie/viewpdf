@@ -46,35 +46,42 @@ class _ZoomPageState extends State<ZoomPage> {
   Widget build(BuildContext context) {
     return Container(
       child: Row(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          booton(true, "+", (_zoomI < _zooms.length)),
+          booton(true, (_zoomI < _zooms.length)),
           Container(
+            color: Colors.white,
             margin: EdgeInsets.all(5),
-            child: Text("$_porsenaje"),
+            padding: EdgeInsets.all(8),
+            child: Text(
+              "$_porsenaje",
+              style: TextStyle(color: Colors.black),
+            ),
           ),
-          booton(false, "-", (_zoomI > 0)),
+          booton(false, (_zoomI > 0)),
         ],
       ),
     );
   }
 
-  Widget booton(bool sumres, String signo, bool enable) {
-    return InkWell(
-      onTap: () {
-        if (enable) {
-          chanZoom(sumres);
-          widget.zoomChange(sumres);
-        }
-      },
-      child: Container(
-        padding: EdgeInsets.all(5),
-        decoration: BoxDecoration(
-          color: Colors.grey[350],
+  Widget booton(bool sumres, bool enable) {
+    final double size = 30;
+
+    return Container(
+      width: size,
+      height: size,
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          primary: Colors.grey[400],
+          padding: EdgeInsets.all(0),
         ),
-        child: Text(
-          signo,
-          style: TextStyle(color: Colors.black),
-        ),
+        onPressed: () {
+          if (enable) {
+            chanZoom(sumres);
+            widget.zoomChange(sumres);
+          }
+        },
+        child: sumres ? Icon(Icons.add) : Icon(Icons.remove),
       ),
     );
   }

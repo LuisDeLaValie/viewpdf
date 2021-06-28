@@ -13,6 +13,7 @@ import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 import 'package:viewPDF/DB/ListaData.dart';
 
 import 'package:viewPDF/model/PDFModel.dart';
+import 'package:viewPDF/view/pdfview/page.dart';
 import 'zoom.dart';
 
 class MyPDF extends StatefulWidget {
@@ -70,27 +71,12 @@ class _MyPDFState extends State<MyPDF> {
     return Scaffold(
       appBar: _mostrarAppbar
           ? AppBar(
-              title: Container(
-                child: Center(
-                  child: Row(
-                    children: [
-                      Container(
-                        width: 50,
-                        height: 30,
-                        child: TextField(
-                          style: TextStyle(color: Colors.white),
-                          controller: pageControler,
-                          keyboardType: TextInputType.number,
-                          onSubmitted: (s) {
-                            pdfViewController
-                                .jumpToPage(int.parse(s)); // .setPage();
-                          },
-                        ),
-                      ),
-                      Text("/$allpague")
-                    ],
-                  ),
-                ),
+              title: LaPage(
+                allPage: allpague,
+                pageController: pageControler,
+                page: (val) {
+                  pdfViewController.jumpToPage(val); // .setPage();
+                },
               ),
               actions: [
                 ZoomPage(

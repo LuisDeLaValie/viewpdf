@@ -1,11 +1,10 @@
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:sembast/sembast.dart';
-import 'package:sembast/timestamp.dart';
 import 'package:viewPDF/DB/ListaData.dart';
 import 'package:viewPDF/model/PDFModel.dart';
 import 'package:viewPDF/providers/EstanteriaProvider.dart';
+import 'package:viewPDF/view/estanteria/menu.dart';
 import 'package:viewPDF/view/estanteria/widget/ElemntoEstanteria.dart';
 import '../PDFVIEW/MyPdfView.dart';
 
@@ -58,7 +57,7 @@ class __EstanteriaScreenState extends State<_EstanteriaScreen> {
       appBar: AppBar(
         title: Text('Material App Bar'),
         actions: [
-          myPopMenu(),
+          Menu(),
         ],
       ),
       body: FutureBuilder<List<PDFModel>>(
@@ -82,66 +81,18 @@ class __EstanteriaScreenState extends State<_EstanteriaScreen> {
         },
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          getPDF();
+        onPressed: () async {
+          final res = await widget.provider.getPDF();
+          widget.provider.ordernarFiltrar();
+          if (res['actualizar']) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => MyPDF(pdf: res['pdf'])),
+            );
+          }
         },
         child: Icon(Icons.add),
       ),
-    );
-  }
-
-  void getPDF() async {
-    FilePickerResult result = await FilePicker.platform.pickFiles(
-      type: FileType.custom,
-      allowMultiple: true,
-      allowedExtensions: ['pdf'],
-    );
-
-    if (result != null) {
-      PDFModel pdf;
-      for (var file in result.files) {
-        pdf = await EstanteriaDB.instance.add(PDFModel(
-          page: 0,
-          path: file.path,
-          name: file.name,
-          actualizado: Timestamp.now(),
-        ));
-      }
-      if (result.paths.length == 1) {
-        Navigator.push(
-          this.context,
-          MaterialPageRoute(builder: (context) => MyPDF(pdf: pdf)),
-        ).then((value) {});
-      } else {
-        widget.provider.ordernarFiltrar();
-      }
-    }
-  }
-
-  Widget myPopMenu() {
-    return PopupMenuButton(
-      onSelected: (value) {
-        if (value == 1) {
-          widget.provider.limpiarlista();
-        }
-      },
-      itemBuilder: (context) => [
-        PopupMenuItem(
-          value: 1,
-          child: Row(
-            children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.fromLTRB(2, 2, 8, 2),
-                child: Icon(
-                  Icons.clear_all_outlined,
-                  color: Colors.grey,
-                ),
-              ),
-              Text('Limpiar.')
-            ],
-          ),
-        ),
-      ],
     );
   }
 }

@@ -1,3 +1,4 @@
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:sembast/sembast.dart';
 import 'package:sembast/timestamp.dart';
@@ -54,14 +55,30 @@ class EstanteriaProvider with ChangeNotifier {
   }
 
   Future<void> ordernarFiltrar({Finder orden}) async {
-    _orden = orden ??
-        Finder(
-          sortOrders: [
-            SortOrder('isTemporal', false),
-            SortOrder('actualizado', false),
-          ],
-        );
+    _orden = orden ?? _orden;
     _lista = await EstanteriaDB.instance.listar(finder: _orden);
     notifyListeners();
+  }
+
+  Future<Map<String, dynamic>> getPDF() async {
+    FilePickerResult result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowMultiple: true,
+      allowedExtensions: ['pdf'],
+    );
+
+    if (result != null) {
+      PDFModel pdf;
+      for (var file in result.files) {
+        pdf = await EstanteriaDB.instance.add(PDFModel(
+          page: 0,
+          path: file.path,
+          name: file.name,
+          actualizado: Timestamp.now(),
+        ));
+      }
+      return {'pdf': pdf, 'actualizar': result.count > 1};
+    }
+    return {'actualizar': false};
   }
 }
