@@ -4,11 +4,12 @@ import 'package:sembast/sembast.dart';
 import 'package:viewPDF/DB/ListaData.dart';
 import 'package:viewPDF/model/PDFModel.dart';
 import 'package:viewPDF/providers/EstanteriaProvider.dart';
-import 'package:viewPDF/view/estanteria/menu.dart';
-import 'package:viewPDF/view/estanteria/widget/ElemntoEstanteria.dart';
 import '../PDFVIEW/MyPdfView.dart';
 
 import 'package:provider/provider.dart';
+
+import 'menu.dart';
+import 'widget/ElemntoEstanteria.dart';
 
 class EstanteriaScreen extends StatelessWidget {
   const EstanteriaScreen({Key key}) : super(key: key);

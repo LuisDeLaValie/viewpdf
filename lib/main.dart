@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:viewPDF/DB/ListaData.dart';
 
 import 'DB/db.dart';
-import 'view/estanteria/estanteria.dart';
+import 'Screen/estanteria/estanteria.dart';
 
 main() async {
   WidgetsFlutterBinding.ensureInitialized();

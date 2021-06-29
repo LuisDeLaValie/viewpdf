@@ -11,9 +11,9 @@ import 'package:path_provider/path_provider.dart';
 import 'package:sembast/sembast.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 import 'package:viewPDF/DB/ListaData.dart';
+import 'package:viewPDF/Screen/pdfview/page.dart';
 
 import 'package:viewPDF/model/PDFModel.dart';
-import 'package:viewPDF/view/pdfview/page.dart';
 import 'zoom.dart';
 
 class MyPDF extends StatefulWidget {
