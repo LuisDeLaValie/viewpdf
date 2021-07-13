@@ -18,16 +18,16 @@ import 'zoom.dart';
 
 class MyPDF extends StatefulWidget {
   final PDFModel pdf;
-  MyPDF({Key key, @required this.pdf}) : super(key: key);
+  MyPDF({Key? key, required this.pdf}) : super(key: key);
 
   @override
   _MyPDFState createState() => _MyPDFState();
 }
 
 class _MyPDFState extends State<MyPDF> {
-  PDFModel pdf;
-  TextEditingController pageControler;
-  PdfViewerController pdfViewController;
+  late PDFModel pdf;
+  TextEditingController? pageControler;
+  PdfViewerController? pdfViewController;
 
   bool _mostrarAppbar = true;
   int allpague = 0;
@@ -39,21 +39,21 @@ class _MyPDFState extends State<MyPDF> {
     pageControler = new TextEditingController();
     pdfViewController = PdfViewerController();
 
-    pdfViewController.addListener(({property}) {
+    pdfViewController!.addListener(({property}) {
       log("property: $property.");
 
       if (property == "pageCount") {
-        pageControler.text = "${pdf.page}";
-        pdfViewController.jumpToPage(pdf.page);
+        pageControler!.text = "${pdf.page}";
+        pdfViewController!.jumpToPage(pdf.page!);
 
         setState(() {
-          allpague = pdfViewController.pageCount;
+          allpague = pdfViewController!.pageCount;
         });
       } else if (property == "zoomLevel") {
         // pdfViewController.
-        pdf.zoom = pdfViewController.zoomLevel;
+        pdf.zoom = pdfViewController!.zoomLevel;
         EstanteriaDB.instance.actualizar(pdf);
-        log("ZOOM :: " + pdfViewController.zoomLevel.toString());
+        log("ZOOM :: " + pdfViewController!.zoomLevel.toString());
       }
     });
     super.initState();
@@ -61,9 +61,9 @@ class _MyPDFState extends State<MyPDF> {
 
   void cambiarZoom(bool sumres) {
     if (sumres)
-      pdfViewController.zoomLevel += 0.25;
+      pdfViewController!.zoomLevel += 0.25;
     else
-      pdfViewController.zoomLevel -= 0.25;
+      pdfViewController!.zoomLevel -= 0.25;
   }
 
   @override
@@ -75,7 +75,7 @@ class _MyPDFState extends State<MyPDF> {
                 allPage: allpague,
                 pageController: pageControler,
                 page: (val) {
-                  pdfViewController.jumpToPage(val); // .setPage();
+                  pdfViewController!.jumpToPage(val); // .setPage();
                 },
               ),
               actions: [
@@ -89,12 +89,12 @@ class _MyPDFState extends State<MyPDF> {
           : null,
       body: Container(
         child: SfPdfViewer.file(
-          File(pdf.path),
-          initialZoomLevel: pdf.zoom,
+          File(pdf.path!),
+          initialZoomLevel: pdf.zoom!,
           controller: pdfViewController,
           onPageChanged: (chane) {
-            pageControler.text = "${pdfViewController.pageNumber}";
-            pdf.page = pdfViewController.pageNumber;
+            pageControler!.text = "${pdfViewController!.pageNumber}";
+            pdf.page = pdfViewController!.pageNumber;
             EstanteriaDB.instance.actualizar(pdf);
             log("onPageChanged :: " + "${chane.newPageNumber}");
           },
@@ -117,7 +117,7 @@ class _MyPDFState extends State<MyPDF> {
 
   Widget myPopMenu() {
     return PopupMenuButton(
-      onSelected: (value) {
+      onSelected: (dynamic value) {
         if (value == 1) {
           guardarpdf();
         } else if (value == 2) {
@@ -126,9 +126,8 @@ class _MyPDFState extends State<MyPDF> {
           eliminar();
         }
       },
-      itemBuilder: (context) => [
-        (pdf.isTemporal)
-            ? PopupMenuItem(
+      itemBuilder: (context) => <PopupMenuEntry<dynamic>>[
+        if(pdf.isTemporal!)PopupMenuItem(
                 value: 1,
                 child: Row(
                   children: <Widget>[
@@ -146,7 +145,7 @@ class _MyPDFState extends State<MyPDF> {
                   ],
                 ),
               )
-            : null,
+            ,
         PopupMenuItem(
           value: 2,
           child: Row(
@@ -188,7 +187,7 @@ class _MyPDFState extends State<MyPDF> {
   }
 
   void guardarpdf() async {
-    File file = new File(pdf.path);
+    File file = new File(pdf.path!);
     String name = basename(file.path);
 
     final String path = (await getApplicationDocumentsDirectory()).path;
@@ -209,7 +208,7 @@ class _MyPDFState extends State<MyPDF> {
         filter: Filter.equals('id', pdf.id),
       ),
     );
-    File file = File(pdf.path);
+    File file = File(pdf.path!);
     await file.delete();
     Navigator.of(this.context).pop();
   }
@@ -221,7 +220,7 @@ class _MyPDFState extends State<MyPDF> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text('Path del archivo.'),
-          content: Text(pdf.path),
+          content: Text(pdf.path!),
           actions: <Widget>[
             TextButton(
               child: Text('Ok'),

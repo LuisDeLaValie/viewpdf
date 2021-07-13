@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
 class Etiqueta extends StatelessWidget {
-  final String texto;
-  final Color color;
-  const Etiqueta({Key key, this.texto, this.color}) : super(key: key);
+  final String? texto;
+  final Color? color;
+  const Etiqueta({Key? key, this.texto, this.color}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -13,7 +13,7 @@ class Etiqueta extends StatelessWidget {
           color: (this.color != null) ? this.color : Colors.green,
           borderRadius: BorderRadius.all(Radius.circular(50))),
       child: Text(
-        this.texto,
+        this.texto!,
         style: TextStyle(fontSize: 8, color: Colors.white),
       ),
     );

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
 class ZoomPage extends StatefulWidget {
-  final double initZoom;
+  final double? initZoom;
   final Function(bool sumres) zoomChange;
-  ZoomPage({Key key, this.initZoom = 1, @required this.zoomChange})
+  ZoomPage({Key? key, this.initZoom = 1, required this.zoomChange})
       : super(key: key);
 
   @override
@@ -21,10 +21,10 @@ class _ZoomPageState extends State<ZoomPage> {
 
   List<double> _zooms = [1, 1.25, 1.50, 1.75, 2, 2.25, 2.50, 2.75, 3];
 
-  void calcularZoom(double por) {
+  void calcularZoom(double? por) {
     _zoomI = 0;
     _zooms.forEach((element) {
-      if (element >= por) return;
+      if (element >= por!) return;
       _zoomI++;
     });
     setState(() {

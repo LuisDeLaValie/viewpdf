@@ -8,9 +8,9 @@ class DB {
   static DB _instance = DB._internal();
   static DB get instance => DB._instance;
 
-  Database _database;
+  Database? _database;
 
-  Database get database => this._database;
+  Database? get database => this._database;
 
   Future<void> init() async {
     final String dbName = "flutter_avanzado.db";
@@ -23,6 +23,6 @@ class DB {
   }
 
   Future<void> close() async {
-    await this._database.close();
+    await this._database!.close();
   }
 }

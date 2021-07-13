@@ -1,20 +1,20 @@
-import 'package:flutter/material.dart';
+
 import 'package:sembast/timestamp.dart';
 
 class PDFModel {
-  int id;
-  int page;
-  String path;
-  String name;
-  Timestamp actualizado;
-  bool isTemporal;
-  double zoom;
+  int? id;
+  int? page;
+  String? path;
+  String? name;
+  Timestamp? actualizado;
+  bool? isTemporal;
+  double? zoom;
 
   PDFModel(
       {this.id,
-      @required this.name,
-      @required this.path,
-      @required this.actualizado,
+      required this.name,
+      required this.path,
+      required this.actualizado,
       this.page = 0,
       this.isTemporal = true,
       this.zoom = 1});

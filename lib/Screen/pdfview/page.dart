@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
 class LaPage extends StatelessWidget {
-  final int allPage;
-  final Function(int) page;
-  final TextEditingController pageController;
-  const LaPage({Key key, this.allPage, this.page, this.pageController})
+  final int? allPage;
+  final Function(int)? page;
+  final TextEditingController? pageController;
+  const LaPage({Key? key, this.allPage, this.page, this.pageController})
       : super(key: key);
 
   @override
@@ -26,7 +26,7 @@ class LaPage extends StatelessWidget {
                 controller: pageController,
                 keyboardType: TextInputType.number,
                 onSubmitted: (s) {
-                  page(int.parse(s));
+                  page!(int.parse(s));
                 },
               ),
             ),

@@ -3,13 +3,13 @@ import 'package:provider/provider.dart';
 import 'package:viewPDF/providers/EstanteriaProvider.dart';
 
 class Menu extends StatelessWidget {
-  const Menu({Key key}) : super(key: key);
+  const Menu({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final pro = Provider.of<EstanteriaProvider>(context);
     return PopupMenuButton(
-      onSelected: (value) {
+      onSelected: (dynamic value) {
         if (value == 1) {
           pro.limpiarlista();
         }

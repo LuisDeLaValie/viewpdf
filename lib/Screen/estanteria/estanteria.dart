@@ -12,7 +12,7 @@ import 'menu.dart';
 import 'widget/ElemntoEstanteria.dart';
 
 class EstanteriaScreen extends StatelessWidget {
-  const EstanteriaScreen({Key key}) : super(key: key);
+  const EstanteriaScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +27,7 @@ class EstanteriaScreen extends StatelessWidget {
 }
 
 class _EstanteriaProvider extends StatelessWidget {
-  const _EstanteriaProvider({Key key}) : super(key: key);
+  const _EstanteriaProvider({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -38,14 +38,14 @@ class _EstanteriaProvider extends StatelessWidget {
 
 class _EstanteriaScreen extends StatefulWidget {
   final EstanteriaProvider provider;
-  const _EstanteriaScreen(this.provider, {Key key}) : super(key: key);
+  const _EstanteriaScreen(this.provider, {Key? key}) : super(key: key);
 
   @override
   __EstanteriaScreenState createState() => __EstanteriaScreenState();
 }
 
 class __EstanteriaScreenState extends State<_EstanteriaScreen> {
-  Finder ordenar;
+  Finder? ordenar;
   @override
   void initState() {
     super.initState();
@@ -70,14 +70,22 @@ class __EstanteriaScreenState extends State<_EstanteriaScreen> {
               child: CircularProgressIndicator(),
             );
           } else {
-            List<PDFModel> lista = snapshot.data;
+            List<PDFModel>? lista = snapshot.data;
 
             return Container(
-              child: ListView.builder(
-                itemCount: lista.length ?? 0,
-                itemBuilder: (__, i) => EstanteriaAparador(item: lista[i]),
-              ),
-            );
+                child: GridView.count(
+              // Create a grid with 2 columns. If you change the scrollDirection to
+              // horizontal, this produces 2 rows.
+              crossAxisCount: 2,
+              // Generate 100 widgets that display their index in the List.
+              children: lista!.map((e) => EstanteriaAparador(item: e)).toList(),
+            )
+
+                // ListView.builder(
+                //   itemCount: lista!.length,
+                //   itemBuilder: (__, i) => Container(width: 80, child: EstanteriaAparador(item: lista[i])),
+                // ),
+                );
           }
         },
       ),

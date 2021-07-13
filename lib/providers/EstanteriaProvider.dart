@@ -8,7 +8,7 @@ import 'package:viewPDF/model/PDFModel.dart';
 class EstanteriaProvider with ChangeNotifier {
   List<PDFModel> _lista = [];
   bool _loader = true;
-  Finder _orden;
+  Finder? _orden;
 
   List<PDFModel> get lista => this._lista;
   bool get loader => this._loader;
@@ -54,21 +54,21 @@ class EstanteriaProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> ordernarFiltrar({Finder orden}) async {
+  Future<void> ordernarFiltrar({Finder? orden}) async {
     _orden = orden ?? _orden;
     _lista = await EstanteriaDB.instance.listar(finder: _orden);
     notifyListeners();
   }
 
   Future<Map<String, dynamic>> getPDF() async {
-    FilePickerResult result = await FilePicker.platform.pickFiles(
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
       allowMultiple: true,
       allowedExtensions: ['pdf'],
     );
 
     if (result != null) {
-      PDFModel pdf;
+      PDFModel? pdf;
       for (var file in result.files) {
         pdf = await EstanteriaDB.instance.add(PDFModel(
           page: 0,

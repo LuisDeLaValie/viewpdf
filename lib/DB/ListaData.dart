@@ -11,7 +11,7 @@ class EstanteriaDB {
   static EstanteriaDB _instance = EstanteriaDB._internal();
   static EstanteriaDB get instance => EstanteriaDB._instance;
 
-  final Database _db = DB.instance.database;
+  final Database? _db = DB.instance.database;
   final StoreRef<String, Map> _store = StoreRef<String, Map>("estanteria");
 
   int lenggth = 0;
@@ -20,38 +20,40 @@ class EstanteriaDB {
     lenggth = (await listar()).length;
   }
 
-  Future<List<PDFModel>> listar({Finder finder}) async {
+  Future<List<PDFModel>> listar({Finder? finder}) async {
     List<RecordSnapshot<String, Map>> snapshots =
-        await this._store.find(this._db, finder: finder);
-    lenggth = snapshots.length ?? 0;
+        await this._store.find(this._db!, finder: finder);
+    lenggth = snapshots.length ;
     return snapshots
-        .map(
-            (RecordSnapshot<String, Map> snap) => PDFModel.fromJson(snap.value))
+        .map((RecordSnapshot<String, Map> snap) =>
+            PDFModel.fromJson(snap.value as Map<String, dynamic>))
         .toList();
   }
 
   Future<PDFModel> add(PDFModel pdf) async {
     pdf.id = lenggth + 1;
-    PDFModel nuevoPDF = PDFModel.fromJson(
-        await this._store.record("${pdf.id}").put(this._db, pdf.toJson()));
+    PDFModel nuevoPDF = PDFModel.fromJson((await this
+        ._store
+        .record("${pdf.id}")
+        .put(this._db!, pdf.toJson()) as Map<String, dynamic>));
     lenggth++;
     return nuevoPDF;
   }
 
-  Future<PDFModel> traer(int id) async {
+  Future<PDFModel> traer(int? id) async {
     List<RecordSnapshot<String, Map>> data = await this
         ._store
-        .find(this._db, finder: Finder(filter: Filter.byKey("$id")));
+        .find(this._db!, finder: Finder(filter: Filter.byKey("$id")));
 
-    return PDFModel.fromJson(data[0].value);
+    return PDFModel.fromJson(data[0].value as Map<String, dynamic>);
   }
 
-  Future<int> eliminar({Finder finder}) async {
-    return await this._store.delete(this._db, finder: finder);
+  Future<int> eliminar({Finder? finder}) async {
+    return await this._store.delete(this._db!, finder: finder);
   }
 
   Future<int> actualizar(PDFModel pdf) async {
-    return await this._store.update(this._db, pdf.toJson(),
+    return await this._store.update(this._db!, pdf.toJson(),
         finder: Finder(filter: Filter.byKey("${pdf.id}")));
   }
 
