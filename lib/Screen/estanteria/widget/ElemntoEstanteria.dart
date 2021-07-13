@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:thumbnailer/thumbnailer.dart';
 import 'package:viewPDF/Screen/pdfview/MyPdfView.dart';
+import 'package:viewPDF/Screen/pdfview/ViewPdf.dart';
 import 'package:viewPDF/model/PDFModel.dart';
 import 'package:viewPDF/providers/EstanteriaProvider.dart';
 
@@ -27,7 +28,7 @@ class EstanteriaAparador extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => MyPDF(pdf: item),
+                  builder: (context) => ViewPdf(pdf: item),
                 ),
               );
             },
