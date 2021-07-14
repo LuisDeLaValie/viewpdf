@@ -40,7 +40,7 @@ class _MyPDFState extends State<MyPDF> {
     pdfViewController = PdfViewerController();
 
     pdfViewController!.addListener(({property}) {
-      log("property: $property.");
+      // log("property: $property.");
 
       if (property == "pageCount") {
         pageControler!.text = "${pdf.page}";
@@ -51,9 +51,7 @@ class _MyPDFState extends State<MyPDF> {
         });
       } else if (property == "zoomLevel") {
         // pdfViewController.
-        pdf.zoom = pdfViewController!.zoomLevel;
-        EstanteriaDB.instance.actualizar(pdf);
-        log("ZOOM :: " + pdfViewController!.zoomLevel.toString());
+
       }
     });
     super.initState();
@@ -81,36 +79,38 @@ class _MyPDFState extends State<MyPDF> {
               actions: [
                 ZoomPage(
                   zoomChange: cambiarZoom,
-                  initZoom: pdf.zoom,
+                  initZoom: pdf.zoom!,
                 ),
                 myPopMenu(),
               ],
             )
           : null,
-      body: Container(
-        child: SfPdfViewer.file(
-          File(pdf.path!),
-          initialZoomLevel: pdf.zoom!,
-          controller: pdfViewController,
-          onPageChanged: (chane) {
-            pageControler!.text = "${pdfViewController!.pageNumber}";
-            pdf.page = pdfViewController!.pageNumber;
-            EstanteriaDB.instance.actualizar(pdf);
-            log("onPageChanged :: " + "${chane.newPageNumber}");
-          },
-          onDocumentLoaded: (load) {
-            log("onDocumentLoaded :: " + load.toString());
-          },
-          onDocumentLoadFailed: (fail) {
-            log("onDocumentLoadFailed :: " + fail.toString());
-          },
-          onTextSelectionChanged: (asa) {
-            log("onTextSelectionChanged :: " + asa.toString());
-          },
-          onZoomLevelChanged: (ash) {
-            log("onZoomLevelChanged :: " + ash.toString());
-          },
-        ),
+      body: SfPdfViewer.file(
+        File(pdf.path!),
+        initialZoomLevel: pdf.zoom!,
+        controller: pdfViewController,
+        onPageChanged: (chane) {
+          pageControler!.text = "${pdfViewController!.pageNumber}";
+          pdf.page = pdfViewController!.pageNumber;
+          EstanteriaDB.instance.actualizar(pdf);
+          log("onPageChanged :: " + "${chane.newPageNumber}");
+        },
+        onDocumentLoaded: (load) {
+          log("onDocumentLoaded :: " + load.toString());
+        },
+        onDocumentLoadFailed: (fail) {
+          log("onDocumentLoadFailed :: " + fail.toString());
+        },
+        onTextSelectionChanged: (asa) {
+          log("onTextSelectionChanged :: " + asa.toString());
+        },
+        onZoomLevelChanged: (ash) {
+          setState(() {
+            pdf.zoom = ash.newZoomLevel;
+          });
+          EstanteriaDB.instance.actualizar(pdf);
+          log("ZOOM :: " + pdfViewController!.zoomLevel.toString());
+        },
       ),
     );
   }
@@ -127,25 +127,25 @@ class _MyPDFState extends State<MyPDF> {
         }
       },
       itemBuilder: (context) => <PopupMenuEntry<dynamic>>[
-        if(pdf.isTemporal!)PopupMenuItem(
-                value: 1,
-                child: Row(
-                  children: <Widget>[
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(2, 2, 8, 2),
-                      child: Icon(
-                        Icons.save_alt,
-                        color: Colors.grey,
-                      ),
-                    ),
-                    Text(
-                      'Guardar',
-                      style: TextStyle(fontSize: 10),
-                    )
-                  ],
+        if (pdf.isTemporal!)
+          PopupMenuItem(
+            value: 1,
+            child: Row(
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(2, 2, 8, 2),
+                  child: Icon(
+                    Icons.save_alt,
+                    color: Colors.grey,
+                  ),
                 ),
-              )
-            ,
+                Text(
+                  'Guardar',
+                  style: TextStyle(fontSize: 10),
+                )
+              ],
+            ),
+          ),
         PopupMenuItem(
           value: 2,
           child: Row(

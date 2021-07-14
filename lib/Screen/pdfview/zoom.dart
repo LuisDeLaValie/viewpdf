@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class ZoomPage extends StatefulWidget {
-  final double? initZoom;
+  final double initZoom;
   final Function(bool sumres) zoomChange;
   ZoomPage({Key? key, this.initZoom = 1, required this.zoomChange})
       : super(key: key);
@@ -16,19 +16,13 @@ class _ZoomPageState extends State<ZoomPage> {
   @override
   void initState() {
     super.initState();
-    calcularZoom(widget.initZoom);
   }
 
-  List<double> _zooms = [1, 1.25, 1.50, 1.75, 2, 2.25, 2.50, 2.75, 3];
-
-  void calcularZoom(double? por) {
+  void calcularZoom(double por) {
     _zoomI = 0;
-    _zooms.forEach((element) {
-      if (element >= por!) return;
-      _zoomI++;
-    });
+    por--;
     setState(() {
-      _porsenaje = (12.5 + (12.5 * _zoomI)).toString() + "%";
+      _porsenaje = (por * 100 / 2).toString() + "%";
     });
   }
 
@@ -44,11 +38,12 @@ class _ZoomPageState extends State<ZoomPage> {
 
   @override
   Widget build(BuildContext context) {
+    calcularZoom(widget.initZoom);
     return Container(
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          booton(true, (_zoomI < _zooms.length)),
+          booton(true, true),
           Container(
             color: Colors.white,
             margin: EdgeInsets.all(5),
@@ -58,7 +53,7 @@ class _ZoomPageState extends State<ZoomPage> {
               style: TextStyle(color: Colors.black),
             ),
           ),
-          booton(false, (_zoomI > 0)),
+          booton(false, true),
         ],
       ),
     );
