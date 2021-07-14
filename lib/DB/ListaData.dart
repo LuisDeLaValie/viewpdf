@@ -23,7 +23,7 @@ class EstanteriaDB {
   Future<List<PDFModel>> listar({Finder? finder}) async {
     List<RecordSnapshot<String, Map>> snapshots =
         await this._store.find(this._db!, finder: finder);
-    lenggth = snapshots.length ;
+    lenggth = snapshots.length;
     return snapshots
         .map((RecordSnapshot<String, Map> snap) =>
             PDFModel.fromJson(snap.value as Map<String, dynamic>))
@@ -31,19 +31,18 @@ class EstanteriaDB {
   }
 
   Future<PDFModel> add(PDFModel pdf) async {
-    pdf.id = lenggth + 1;
     PDFModel nuevoPDF = PDFModel.fromJson((await this
         ._store
-        .record("${pdf.id}")
+        .record(pdf.id!)
         .put(this._db!, pdf.toJson()) as Map<String, dynamic>));
     lenggth++;
     return nuevoPDF;
   }
 
-  Future<PDFModel> traer(int? id) async {
+  Future<PDFModel> traer(String? id) async {
     List<RecordSnapshot<String, Map>> data = await this
         ._store
-        .find(this._db!, finder: Finder(filter: Filter.byKey("$id")));
+        .find(this._db!, finder: Finder(filter: Filter.byKey(id)));
 
     return PDFModel.fromJson(data[0].value as Map<String, dynamic>);
   }

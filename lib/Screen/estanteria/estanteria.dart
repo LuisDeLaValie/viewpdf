@@ -73,19 +73,20 @@ class __EstanteriaScreenState extends State<_EstanteriaScreen> {
             List<PDFModel>? lista = snapshot.data;
 
             return Container(
-                child: GridView.count(
-              // Create a grid with 2 columns. If you change the scrollDirection to
-              // horizontal, this produces 2 rows.
-              crossAxisCount: 2,
-              // Generate 100 widgets that display their index in the List.
-              children: lista!.map((e) => EstanteriaAparador(item: e)).toList(),
-            )
-
-                // ListView.builder(
-                //   itemCount: lista!.length,
-                //   itemBuilder: (__, i) => Container(width: 80, child: EstanteriaAparador(item: lista[i])),
-                // ),
-                );
+              padding: EdgeInsets.all(8),
+              child: GridView.builder(
+                gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                  maxCrossAxisExtent: 110.0,
+                  mainAxisExtent: 170,
+                  crossAxisSpacing: 20,
+                  mainAxisSpacing: 10,
+                ),
+                itemCount: lista!.length,
+                itemBuilder: (_, index) {
+                  return EstanteriaAparador(item: lista[index]);
+                },
+              ),
+            );
           }
         },
       ),

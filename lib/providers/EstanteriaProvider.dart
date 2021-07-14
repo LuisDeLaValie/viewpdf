@@ -1,8 +1,11 @@
+import 'dart:math';
+
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:sembast/sembast.dart';
 import 'package:sembast/timestamp.dart';
 import 'package:viewPDF/DB/ListaData.dart';
+import 'package:viewPDF/ManejoarPDF.dart';
 import 'package:viewPDF/model/PDFModel.dart';
 
 class EstanteriaProvider with ChangeNotifier {
@@ -70,9 +73,16 @@ class EstanteriaProvider with ChangeNotifier {
     if (result != null) {
       PDFModel? pdf;
       for (var file in result.files) {
+       
+        String key = DateTime.now().millisecondsSinceEpoch.toString();
+        key += "-" + generateRandomString(4);
+        final portada = await ManejoarPDF().crearPortada(file.path!, key);
+       
         pdf = await EstanteriaDB.instance.add(PDFModel(
+          id: key,
           page: 0,
           path: file.path,
+          portada: portada,
           name: file.name,
           actualizado: Timestamp.now(),
         ));
@@ -80,5 +90,11 @@ class EstanteriaProvider with ChangeNotifier {
       return {'pdf': pdf, 'actualizar': result.count > 1};
     }
     return {'actualizar': false};
+  }
+
+  String generateRandomString(int len) {
+    var r = Random();
+    return String.fromCharCodes(
+        List.generate(len, (index) => r.nextInt(33) + 89));
   }
 }
