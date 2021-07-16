@@ -2,7 +2,7 @@ import 'dart:developer';
 
 import 'package:sembast/sembast.dart';
 import 'package:sembast/timestamp.dart';
-import 'package:viewPDF/model/PDFModel.dart';
+import 'package:viewpdf/model/PDFModel.dart';
 
 import 'db.dart';
 

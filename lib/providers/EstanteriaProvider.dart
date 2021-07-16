@@ -1,48 +1,70 @@
+import 'dart:developer' as dev;
 import 'dart:math';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:sembast/sembast.dart';
 import 'package:sembast/timestamp.dart';
-import 'package:viewPDF/DB/ListaData.dart';
-import 'package:viewPDF/ManejoarPDF.dart';
-import 'package:viewPDF/model/PDFModel.dart';
+import 'package:viewpdf/DB/ListaData.dart';
+import 'package:viewpdf/ManejoarPDF.dart';
+import 'package:viewpdf/model/PDFModel.dart';
 
 class EstanteriaProvider with ChangeNotifier {
   List<PDFModel> _lista = [];
   bool _loader = true;
-  Finder? _orden;
+  List<PDFModel> _pendientes = [];
 
   List<PDFModel> get lista => this._lista;
+
+  List<PDFModel> get pendientes => this._pendientes;
+
   bool get loader => this._loader;
+
+  Finder? _orden = Finder(
+    // filter: Filter.equals("isTemporal", isTemporal),
+    sortOrders: [
+      SortOrder('isTemporal', false),
+      SortOrder('actualizado', false),
+    ],
+  );
+  Finder get orden => this._orden!;
+
+  set orden(Finder finder) {
+    this._orden = finder;
+    notifyListeners();
+  }
 
   set loader(bool val) {
     this._loader = val;
-  }
-
-  set lista(List<PDFModel> val) {
-    this._lista = val;
+    notifyListeners();
   }
 
   Future<void> init() async {
-    _orden = Finder(
-      sortOrders: [
-        SortOrder('isTemporal', false),
-        SortOrder('actualizado', false),
-      ],
-    );
-    _lista = await EstanteriaDB.instance.listar(finder: _orden);
-    _loader = false;
+    Finder finder = this._orden!;
+
+    finder.filter = Filter.equals("isTemporal", true);
+    this._pendientes = await EstanteriaDB.instance.listar(finder: finder);
+
+    finder.filter = Filter.equals("isTemporal", false);
+    this._lista = await EstanteriaDB.instance.listar(finder: finder);
+
+    this._loader = false;
 
     notifyListeners();
   }
 
   Future<void> actualizarPDF(PDFModel pdf) async {
     pdf.actualizado = Timestamp.now();
-    // pdf.isTemporal = false;
 
     await EstanteriaDB.instance.actualizar(pdf);
-    _lista = await EstanteriaDB.instance.listar(finder: _orden);
+
+    Finder finder = this._orden!;
+
+    finder.filter = Filter.equals("isTemporal", false);
+    this._lista = await EstanteriaDB.instance.listar(finder: finder);
+
+    finder.filter = Filter.equals("isTemporal", true);
+    this._pendientes = await EstanteriaDB.instance.listar(finder: finder);
 
     notifyListeners();
   }
@@ -53,14 +75,34 @@ class EstanteriaProvider with ChangeNotifier {
         filter: Filter.equals('isTemporal', true),
       ),
     );
-    _lista = await EstanteriaDB.instance.listar(finder: _orden);
+
+    Finder finder = this._orden!;
+
+    finder.filter = Filter.equals("isTemporal", false);
+    this._lista = await EstanteriaDB.instance.listar(finder: finder);
+
+    finder.filter = Filter.equals("isTemporal", true);
+    this._pendientes = await EstanteriaDB.instance.listar(finder: finder);
+
     notifyListeners();
   }
 
-  Future<void> ordernarFiltrar({Finder? orden}) async {
-    _orden = orden ?? _orden;
-    _lista = await EstanteriaDB.instance.listar(finder: _orden);
-    notifyListeners();
+  Future<bool> ordernarFiltrar({Finder? orden}) async {
+    try {
+      Finder finder = this._orden!;
+
+      finder.filter = Filter.equals("isTemporal", false);
+      this._lista = await EstanteriaDB.instance.listar(finder: finder);
+
+      finder.filter = Filter.equals("isTemporal", true);
+      this._pendientes = await EstanteriaDB.instance.listar(finder: finder);
+
+      notifyListeners();
+      return true;
+    } catch (e) {
+      dev.log(e.toString());
+      return false;
+    }
   }
 
   Future<Map<String, dynamic>> getPDF() async {
@@ -73,19 +115,21 @@ class EstanteriaProvider with ChangeNotifier {
     if (result != null) {
       PDFModel? pdf;
       for (var file in result.files) {
-       
         String key = DateTime.now().millisecondsSinceEpoch.toString();
         key += "-" + generateRandomString(4);
+
         final portada = await ManejoarPDF().crearPortada(file.path!, key);
-       
-        pdf = await EstanteriaDB.instance.add(PDFModel(
-          id: key,
-          page: 0,
-          path: file.path,
-          portada: portada,
-          name: file.name,
-          actualizado: Timestamp.now(),
-        ));
+
+        pdf = await EstanteriaDB.instance.add(
+          PDFModel(
+            id: key,
+            page: 0,
+            path: file.path,
+            portada: portada,
+            name: file.name,
+            actualizado: Timestamp.now(),
+          ),
+        );
       }
       return {'pdf': pdf, 'actualizar': result.count > 1};
     }

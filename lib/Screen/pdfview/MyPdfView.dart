@@ -6,14 +6,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-import 'package:path/path.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:sembast/sembast.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
-import 'package:viewPDF/DB/ListaData.dart';
-import 'package:viewPDF/Screen/pdfview/page.dart';
+import 'package:viewpdf/DB/ListaData.dart';
+import 'package:viewpdf/ManejoarPDF.dart';
+import 'package:viewpdf/Screen/pdfview/page.dart';
 
-import 'package:viewPDF/model/PDFModel.dart';
+import 'package:viewpdf/model/PDFModel.dart';
 import 'zoom.dart';
 
 class MyPDF extends StatefulWidget {
@@ -187,18 +186,14 @@ class _MyPDFState extends State<MyPDF> {
   }
 
   void guardarpdf() async {
-    File file = new File(pdf.path!);
-    String name = basename(file.path);
-
-    final String path = (await getApplicationDocumentsDirectory()).path;
-    File file2 = await file.copy("$path/$name");
+    final path = await ManejoarPDF().moverPdf(pdf.path!, pdf.id!);
 
     pdf.isTemporal = false;
-    pdf.path = file2.path;
+    pdf.path = path;
 
     await EstanteriaDB.instance.actualizar(pdf);
     pdf = await EstanteriaDB.instance.traer(pdf.id);
-    await file.delete();
+
     setState(() {});
   }
 
@@ -208,8 +203,7 @@ class _MyPDFState extends State<MyPDF> {
         filter: Filter.equals('id', pdf.id),
       ),
     );
-    File file = File(pdf.path!);
-    await file.delete();
+    await ManejoarPDF().eliminarPDF(pdf.id!);
     Navigator.of(this.context).pop();
   }
 

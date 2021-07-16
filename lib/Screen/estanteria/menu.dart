@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:viewPDF/providers/EstanteriaProvider.dart';
+import 'package:viewpdf/providers/EstanteriaProvider.dart';
 
 class Menu extends StatelessWidget {
   const Menu({Key? key}) : super(key: key);

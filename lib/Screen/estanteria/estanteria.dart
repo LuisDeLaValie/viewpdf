@@ -1,15 +1,15 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:sembast/sembast.dart';
-import 'package:viewPDF/DB/ListaData.dart';
-import 'package:viewPDF/model/PDFModel.dart';
-import 'package:viewPDF/providers/EstanteriaProvider.dart';
+import 'package:viewpdf/Screen/estanteria/widget/ListaPDF.dart';
+import 'package:viewpdf/Screen/estanteria/widget/listaPendiente.dart';
+import 'package:viewpdf/providers/EstanteriaProvider.dart';
 import '../PDFVIEW/MyPdfView.dart';
 
 import 'package:provider/provider.dart';
 
 import 'menu.dart';
-import 'widget/ElemntoEstanteria.dart';
 
 class EstanteriaScreen extends StatelessWidget {
   const EstanteriaScreen({Key? key}) : super(key: key);
@@ -56,35 +56,47 @@ class __EstanteriaScreenState extends State<_EstanteriaScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Material App Bar'),
+        title: Text('Biblioteca'),
         actions: [
           Menu(),
         ],
       ),
-      body: FutureBuilder<List<PDFModel>>(
-        future: EstanteriaDB.instance.listar(finder: ordenar),
-        builder:
-            (BuildContext context, AsyncSnapshot<List<PDFModel>> snapshot) {
-          if (snapshot.data == null) {
-            return Center(
-              child: CircularProgressIndicator(),
+      body: OrientationBuilder(
+        builder: (_, orientation) {
+          if (orientation == Orientation.portrait) {
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (widget.provider.pendientes.length > 0)
+                  ListaPendiente(
+                    lista: widget.provider.pendientes,
+                    orientation: orientation,
+                  ),
+                if (widget.provider.lista.length > 0)
+                  Expanded(
+                    child: ListaPDF(
+                      lista: widget.provider.lista,
+                      orientation: orientation,
+                    ),
+                  ),
+              ],
             );
           } else {
-            List<PDFModel>? lista = snapshot.data;
-
-            return Container(
-              padding: EdgeInsets.all(8),
-              child: GridView.builder(
-                gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                  maxCrossAxisExtent: 110.0,
-                  mainAxisExtent: 170,
-                  crossAxisSpacing: 20,
-                  mainAxisSpacing: 10,
-                ),
-                itemCount: lista!.length,
-                itemBuilder: (_, index) {
-                  return EstanteriaAparador(item: lista[index]);
-                },
+            return SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (widget.provider.pendientes.length > 0)
+                    ListaPendiente(
+                      lista: widget.provider.pendientes,
+                      orientation: orientation,
+                    ),
+                  if (widget.provider.lista.length > 0)
+                    ListaPDF(
+                      lista: widget.provider.lista,
+                      orientation: orientation,
+                    ),
+                ],
               ),
             );
           }
