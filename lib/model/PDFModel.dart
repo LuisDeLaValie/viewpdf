@@ -9,6 +9,7 @@ class PDFModel {
   Timestamp? actualizado;
   bool? isTemporal;
   double? zoom;
+  bool isSelect = false;
 
   PDFModel(
       {this.id,

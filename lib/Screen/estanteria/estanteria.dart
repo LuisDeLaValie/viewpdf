@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:sembast/sembast.dart';
 import 'package:viewpdf/Screen/estanteria/widget/ListaPDF.dart';
 import 'package:viewpdf/Screen/estanteria/widget/listaPendiente.dart';
@@ -109,7 +108,8 @@ class __EstanteriaScreenState extends State<_EstanteriaScreen> {
           if (res['actualizar']) {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => MyPDF(pdf: res['pdf'])),
+              MaterialPageRoute(
+                  builder: (context) => MyPDFScreen(pdf: res['pdf'])),
             );
           }
         },

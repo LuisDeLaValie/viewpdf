@@ -1,14 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:viewpdf/providers/PDFProvider.dart';
 
 class LaPage extends StatelessWidget {
-  final int? allPage;
   final Function(int)? page;
-  final TextEditingController? pageController;
-  const LaPage({Key? key, this.allPage, this.page, this.pageController})
-      : super(key: key);
+  LaPage({Key? key, this.page}) : super(key: key);
 
+  TextEditingController pageController = new TextEditingController();
   @override
   Widget build(BuildContext context) {
+    final pro = Provider.of<PDFProvider>(context);
+    pageController.text = pro.page.toString();
+    final allPage = pro.allPage;
+
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 2),
       decoration: BoxDecoration(
@@ -26,7 +30,7 @@ class LaPage extends StatelessWidget {
                 controller: pageController,
                 keyboardType: TextInputType.number,
                 onSubmitted: (s) {
-                  page!(int.parse(s));
+                  pro.actualizar(page: int.parse(s));
                 },
               ),
             ),

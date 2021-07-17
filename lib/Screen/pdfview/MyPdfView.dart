@@ -5,96 +5,88 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-
-import 'package:sembast/sembast.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 import 'package:viewpdf/DB/ListaData.dart';
-import 'package:viewpdf/ManejoarPDF.dart';
 import 'package:viewpdf/Screen/pdfview/page.dart';
 
 import 'package:viewpdf/model/PDFModel.dart';
+import 'package:viewpdf/providers/PDFProvider.dart';
 import 'zoom.dart';
 
-class MyPDF extends StatefulWidget {
+import 'package:provider/provider.dart';
+
+class MyPDFScreen extends StatelessWidget {
   final PDFModel pdf;
-  MyPDF({Key? key, required this.pdf}) : super(key: key);
+  const MyPDFScreen({Key? key, required this.pdf}) : super(key: key);
 
   @override
-  _MyPDFState createState() => _MyPDFState();
+  Widget build(BuildContext context) {
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider<PDFProvider>(create: (_) => PDFProvider()),
+      ],
+      child: _MyPDFProvider(
+        pdf: pdf,
+      ),
+    );
+  }
 }
 
-class _MyPDFState extends State<MyPDF> {
-  late PDFModel pdf;
-  TextEditingController? pageControler;
-  PdfViewerController? pdfViewController;
+class _MyPDFProvider extends StatelessWidget {
+  final PDFModel pdf;
+  const _MyPDFProvider({Key? key, required this.pdf}) : super(key: key);
 
-  bool _mostrarAppbar = true;
-  int allpague = 0;
+  @override
+  Widget build(BuildContext context) {
+    final provider = Provider.of<PDFProvider>(context);
+    return _MyPDFScreen(provider, pdf: pdf);
+  }
+}
+
+class _MyPDFScreen extends StatefulWidget {
+  final PDFProvider provider;
+  final PDFModel pdf;
+  const _MyPDFScreen(this.provider, {Key? key, required this.pdf})
+      : super(key: key);
+
+  @override
+  __MyPDFScreenState createState() => __MyPDFScreenState();
+}
+
+class __MyPDFScreenState extends State<_MyPDFScreen> {
+  PdfViewerController? pdfViewController;
 
   @override
   void initState() {
-    this.pdf = widget.pdf;
+    widget.provider.init(widget.pdf);
 
-    pageControler = new TextEditingController();
     pdfViewController = PdfViewerController();
 
-    pdfViewController!.addListener(({property}) {
-      // log("property: $property.");
-
-      if (property == "pageCount") {
-        pageControler!.text = "${pdf.page}";
-        pdfViewController!.jumpToPage(pdf.page!);
-
-        setState(() {
-          allpague = pdfViewController!.pageCount;
-        });
-      } else if (property == "zoomLevel") {
-        // pdfViewController.
-
-      }
-    });
     super.initState();
-  }
-
-  void cambiarZoom(bool sumres) {
-    if (sumres)
-      pdfViewController!.zoomLevel += 0.25;
-    else
-      pdfViewController!.zoomLevel -= 0.25;
   }
 
   @override
   Widget build(BuildContext context) {
+    if (pdfViewController!.pageNumber != widget.provider.page)
+      pdfViewController!.jumpToPage(widget.provider.page);
+    if (pdfViewController!.zoomLevel != widget.provider.zoom)
+      pdfViewController!.zoomLevel = widget.provider.zoom;
+
     return Scaffold(
-      appBar: _mostrarAppbar
-          ? AppBar(
-              title: LaPage(
-                allPage: allpague,
-                pageController: pageControler,
-                page: (val) {
-                  pdfViewController!.jumpToPage(val); // .setPage();
-                },
-              ),
-              actions: [
-                ZoomPage(
-                  zoomChange: cambiarZoom,
-                  initZoom: pdf.zoom!,
-                ),
-                myPopMenu(),
-              ],
-            )
-          : null,
+      appBar: AppBar(
+        title: LaPage(),
+        actions: [ZoomPage(), myPopMenu()],
+      ),
       body: SfPdfViewer.file(
-        File(pdf.path!),
-        initialZoomLevel: pdf.zoom!,
+        File(widget.pdf.path!),
+        initialZoomLevel: widget.provider.zoom,
         controller: pdfViewController,
         onPageChanged: (chane) {
-          pageControler!.text = "${pdfViewController!.pageNumber}";
-          pdf.page = pdfViewController!.pageNumber;
-          EstanteriaDB.instance.actualizar(pdf);
+          widget.provider.actualizar(page: chane.newPageNumber);
           log("onPageChanged :: " + "${chane.newPageNumber}");
         },
         onDocumentLoaded: (load) {
+          widget.provider.allPage = pdfViewController!.pageCount;
           log("onDocumentLoaded :: " + load.toString());
         },
         onDocumentLoadFailed: (fail) {
@@ -104,10 +96,7 @@ class _MyPDFState extends State<MyPDF> {
           log("onTextSelectionChanged :: " + asa.toString());
         },
         onZoomLevelChanged: (ash) {
-          setState(() {
-            pdf.zoom = ash.newZoomLevel;
-          });
-          EstanteriaDB.instance.actualizar(pdf);
+          widget.provider.actualizar(zoom: ash.newZoomLevel);
           log("ZOOM :: " + pdfViewController!.zoomLevel.toString());
         },
       ),
@@ -118,15 +107,15 @@ class _MyPDFState extends State<MyPDF> {
     return PopupMenuButton(
       onSelected: (dynamic value) {
         if (value == 1) {
-          guardarpdf();
+          widget.provider.guardarpdf();
         } else if (value == 2) {
           showMyDialog();
         } else if (value == 3) {
-          eliminar();
+          widget.provider.eliminar();
         }
       },
       itemBuilder: (context) => <PopupMenuEntry<dynamic>>[
-        if (pdf.isTemporal!)
+        if (widget.pdf.isTemporal!)
           PopupMenuItem(
             value: 1,
             child: Row(
@@ -185,28 +174,6 @@ class _MyPDFState extends State<MyPDF> {
     );
   }
 
-  void guardarpdf() async {
-    final path = await ManejoarPDF().moverPdf(pdf.path!, pdf.id!);
-
-    pdf.isTemporal = false;
-    pdf.path = path;
-
-    await EstanteriaDB.instance.actualizar(pdf);
-    pdf = await EstanteriaDB.instance.traer(pdf.id);
-
-    setState(() {});
-  }
-
-  void eliminar() async {
-    await EstanteriaDB.instance.eliminar(
-      finder: Finder(
-        filter: Filter.equals('id', pdf.id),
-      ),
-    );
-    await ManejoarPDF().eliminarPDF(pdf.id!);
-    Navigator.of(this.context).pop();
-  }
-
   Future<void> showMyDialog() async {
     return showDialog<void>(
       context: this.context,
@@ -214,7 +181,7 @@ class _MyPDFState extends State<MyPDF> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text('Path del archivo.'),
-          content: Text(pdf.path!),
+          content: Text(widget.pdf.path!),
           actions: <Widget>[
             TextButton(
               child: Text('Ok'),

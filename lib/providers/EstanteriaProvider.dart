@@ -16,6 +16,18 @@ class EstanteriaProvider with ChangeNotifier {
 
   List<PDFModel> get lista => this._lista;
 
+  set pendientes(List<PDFModel> val) {
+    this._pendientes = val;
+
+    notifyListeners();
+  }
+
+  set lista(List<PDFModel> val) {
+    this._lista = val;
+
+    notifyListeners();
+  }
+
   List<PDFModel> get pendientes => this._pendientes;
 
   bool get loader => this._loader;

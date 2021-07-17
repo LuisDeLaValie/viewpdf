@@ -1,49 +1,28 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:viewpdf/providers/PDFProvider.dart';
 
-class ZoomPage extends StatefulWidget {
-  final double initZoom;
-  final Function(bool sumres) zoomChange;
-  ZoomPage({Key? key, this.initZoom = 1, required this.zoomChange})
-      : super(key: key);
+class ZoomPage extends StatelessWidget {
+  ZoomPage({Key? key}) : super(key: key);
 
-  @override
-  _ZoomPageState createState() => _ZoomPageState();
-}
-
-class _ZoomPageState extends State<ZoomPage> {
-  int _zoomI = 0;
   String _porsenaje = "0%";
-  @override
-  void initState() {
-    super.initState();
-  }
 
   void calcularZoom(double por) {
-    _zoomI = 0;
     por--;
-    setState(() {
-      _porsenaje = (por * 100 / 2).toString() + "%";
-    });
-  }
-
-  chanZoom(bool sumres) {
-    if (sumres)
-      _zoomI++;
-    else
-      _zoomI--;
-    setState(() {
-      _porsenaje = (12.5 + (12.5 * _zoomI)).toString() + "%";
-    });
+    _porsenaje = (por * 100 / 2).toStringAsFixed(2) + "%";
   }
 
   @override
   Widget build(BuildContext context) {
-    calcularZoom(widget.initZoom);
+    final pro = Provider.of<PDFProvider>(context);
+
+    calcularZoom(pro.zoom);
+
     return Container(
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          booton(true, true),
+          booton(true, true, pro),
           Container(
             color: Colors.white,
             margin: EdgeInsets.all(5),
@@ -53,13 +32,13 @@ class _ZoomPageState extends State<ZoomPage> {
               style: TextStyle(color: Colors.black),
             ),
           ),
-          booton(false, true),
+          booton(false, true, pro),
         ],
       ),
     );
   }
 
-  Widget booton(bool sumres, bool enable) {
+  Widget booton(bool sumres, bool enable, PDFProvider pro) {
     final double size = 30;
 
     return Container(
@@ -72,8 +51,10 @@ class _ZoomPageState extends State<ZoomPage> {
         ),
         onPressed: () {
           if (enable) {
-            chanZoom(sumres);
-            widget.zoomChange(sumres);
+            if (sumres)
+              pro.zoom += 0.25;
+            else
+              pro.zoom -= 0.25;
           }
         },
         child: sumres ? Icon(Icons.add) : Icon(Icons.remove),
