@@ -33,7 +33,7 @@ class EstanteriaDB {
   Future<PDFModel> add(PDFModel pdf) async {
     PDFModel nuevoPDF = PDFModel.fromJson((await this
         ._store
-        .record(pdf.id!)
+        .record(pdf.id)
         .put(this._db!, pdf.toJson()) as Map<String, dynamic>));
     lenggth++;
     return nuevoPDF;

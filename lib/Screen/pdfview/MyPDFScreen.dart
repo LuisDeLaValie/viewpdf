@@ -1,19 +1,17 @@
 import 'dart:async';
-import 'dart:developer';
-import 'dart:io';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
-import 'package:viewpdf/DB/ListaData.dart';
-import 'package:viewpdf/Screen/pdfview/page.dart';
+import 'package:viewpdf/Colors/ColorA.dart';
+import 'package:viewpdf/Screen/pdfview/ViewPDF.dart';
 
+import 'package:viewpdf/Screen/pdfview/page.dart';
 import 'package:viewpdf/model/PDFModel.dart';
 import 'package:viewpdf/providers/PDFProvider.dart';
-import 'zoom.dart';
 
-import 'package:provider/provider.dart';
+import 'zoom.dart';
 
 class MyPDFScreen extends StatelessWidget {
   final PDFModel pdf;
@@ -25,9 +23,7 @@ class MyPDFScreen extends StatelessWidget {
       providers: [
         ChangeNotifierProvider<PDFProvider>(create: (_) => PDFProvider()),
       ],
-      child: _MyPDFProvider(
-        pdf: pdf,
-      ),
+      child: _MyPDFProvider(pdf: pdf),
     );
   }
 }
@@ -39,14 +35,16 @@ class _MyPDFProvider extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<PDFProvider>(context);
-    return _MyPDFScreen(provider, pdf: pdf);
+
+    return _MyPDFScreen(provider: provider, pdf: pdf);
   }
 }
 
 class _MyPDFScreen extends StatefulWidget {
   final PDFProvider provider;
   final PDFModel pdf;
-  const _MyPDFScreen(this.provider, {Key? key, required this.pdf})
+
+  const _MyPDFScreen({Key? key, required this.provider, required this.pdf})
       : super(key: key);
 
   @override
@@ -54,51 +52,56 @@ class _MyPDFScreen extends StatefulWidget {
 }
 
 class __MyPDFScreenState extends State<_MyPDFScreen> {
-  PdfViewerController? pdfViewController;
-
+  bool jumpTo = false, pageNavigate = false, primero = true;
   @override
   void initState() {
     widget.provider.init(widget.pdf);
-
-    pdfViewController = PdfViewerController();
-
+    controller.addListener(({property}) {
+      if (!jumpTo && property == "jumpTo") jumpTo = true;
+      if (!pageNavigate && property == "pageNavigate") pageNavigate = true;
+      if (primero && jumpTo && pageNavigate) {
+        primero = false;
+        Future.delayed(Duration(microseconds: 100000), () {
+          controller.zoomLevel = widget.pdf.zoom;
+          controller.jumpToPage(widget.pdf.page);
+        });
+      }
+    });
     super.initState();
   }
 
+  final controller = PdfViewerController();
+
   @override
   Widget build(BuildContext context) {
-    if (pdfViewController!.pageNumber != widget.provider.page)
-      pdfViewController!.jumpToPage(widget.provider.page);
-    if (pdfViewController!.zoomLevel != widget.provider.zoom)
-      pdfViewController!.zoomLevel = widget.provider.zoom;
-
-    return Scaffold(
-      appBar: AppBar(
-        title: LaPage(),
-        actions: [ZoomPage(), myPopMenu()],
-      ),
-      body: SfPdfViewer.file(
-        File(widget.pdf.path!),
-        initialZoomLevel: widget.provider.zoom,
-        controller: pdfViewController,
-        onPageChanged: (chane) {
-          widget.provider.actualizar(page: chane.newPageNumber);
-          log("onPageChanged :: " + "${chane.newPageNumber}");
-        },
-        onDocumentLoaded: (load) {
-          widget.provider.allPage = pdfViewController!.pageCount;
-          log("onDocumentLoaded :: " + load.toString());
-        },
-        onDocumentLoadFailed: (fail) {
-          log("onDocumentLoadFailed :: " + fail.toString());
-        },
-        onTextSelectionChanged: (asa) {
-          log("onTextSelectionChanged :: " + asa.toString());
-        },
-        onZoomLevelChanged: (ash) {
-          widget.provider.actualizar(zoom: ash.newZoomLevel);
-          log("ZOOM :: " + pdfViewController!.zoomLevel.toString());
-        },
+    return WillPopScope(
+      onWillPop: () async {
+        await widget.provider.actualizar();
+        return true;
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: ColorA.bdazzledBlue,
+          title: LaPage(
+            onPageChanged: (int) {
+              controller.jumpToPage(int);
+            },
+          ),
+          actions: [
+            ZoomPage(
+              onZoomChanged: (double zoom) {
+                controller.zoomLevel = zoom;
+              },
+            ),
+            myPopMenu()
+          ],
+        ),
+        body: ViewPDF(
+          pdfViewController: controller,
+          loader: () {
+            // controller.jumpToPage(widget.pdf.page);
+          },
+        ),
       ),
     );
   }
@@ -115,7 +118,7 @@ class __MyPDFScreenState extends State<_MyPDFScreen> {
         }
       },
       itemBuilder: (context) => <PopupMenuEntry<dynamic>>[
-        if (widget.pdf.isTemporal!)
+        if (widget.provider.pdf.isTemporal)
           PopupMenuItem(
             value: 1,
             child: Row(
@@ -181,7 +184,7 @@ class __MyPDFScreenState extends State<_MyPDFScreen> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text('Path del archivo.'),
-          content: Text(widget.pdf.path!),
+          content: Text(widget.provider.pdf.path),
           actions: <Widget>[
             TextButton(
               child: Text('Ok'),

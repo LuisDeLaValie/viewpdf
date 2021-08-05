@@ -1,25 +1,27 @@
 import 'package:sembast/timestamp.dart';
 
 class PDFModel {
-  String? id;
-  int? page;
-  String? path;
-  String? portada;
-  String? name;
-  Timestamp? actualizado;
-  bool? isTemporal;
-  double? zoom;
-  bool isSelect = false;
+  final String id;
+  final int page;
+  final String path;
+  final String portada;
+  final String name;
+  final DateTime? actualizado;
+  final bool isTemporal;
+  final double zoom;
+  final bool isSelect;
 
-  PDFModel(
-      {this.id,
-      required this.name,
-      required this.path,
-      required this.portada,
-      required this.actualizado,
-      this.page = 0,
-      this.isTemporal = true,
-      this.zoom = 1});
+  PDFModel({
+    this.id = "",
+    this.page = 0,
+    this.path = "",
+    this.portada = "",
+    this.name = "",
+    this.actualizado,
+    this.isTemporal = true,
+    this.zoom = 1,
+    this.isSelect = false,
+  });
 
   static PDFModel fromJson(Map<String, dynamic> map) {
     return PDFModel(
@@ -28,7 +30,7 @@ class PDFModel {
       path: map['path'],
       portada: map['portada'],
       name: map['name'],
-      actualizado: map['actualizado'],
+      actualizado: (map['actualizado'] as Timestamp).toDateTime(),
       isTemporal: map['isTemporal'],
       zoom: map['zoom'],
     );
@@ -41,7 +43,7 @@ class PDFModel {
       'path': this.path,
       'portada': this.portada,
       'name': this.name,
-      'actualizado': this.actualizado,
+      'actualizado': Timestamp.fromDateTime(this.actualizado!),
       'isTemporal': this.isTemporal,
       'zoom': this.zoom
     };
@@ -51,10 +53,12 @@ class PDFModel {
     String? id,
     int? page,
     String? path,
+    String? portada,
     String? name,
-    Timestamp? actualizado,
+    DateTime? actualizado,
     bool? isTemporal,
     double? zoom,
+    bool? isSelect,
   }) {
     return PDFModel(
       id: id ?? this.id,
@@ -65,6 +69,7 @@ class PDFModel {
       actualizado: actualizado ?? this.actualizado,
       isTemporal: isTemporal ?? this.isTemporal,
       zoom: zoom ?? this.zoom,
+      isSelect: isSelect ?? this.isSelect,
     );
   }
 }

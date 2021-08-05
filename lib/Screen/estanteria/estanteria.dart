@@ -1,14 +1,17 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:sembast/sembast.dart';
-import 'package:viewpdf/Screen/estanteria/widget/ListaPDF.dart';
-import 'package:viewpdf/Screen/estanteria/widget/listaPendiente.dart';
+import 'package:viewpdf/Colors/ColorA.dart';
+import 'package:viewpdf/Screen/estanteria/Guardados/EstanteriaGuardados.dart';
+import 'package:viewpdf/Screen/estanteria/pendientes/EstanteriaPendientes.dart';
+import 'package:viewpdf/Screen/estanteria/widget/Menu/MainMenu.dart';
+import 'package:viewpdf/Screen/estanteria/widget/Menu/menu.dart';
 import 'package:viewpdf/providers/EstanteriaProvider.dart';
-import '../PDFVIEW/MyPdfView.dart';
 
 import 'package:provider/provider.dart';
+import 'package:viewpdf/providers/SelectProvider.dart';
 
-import 'menu.dart';
+import 'configuracion/Configuracion.dart';
 
 class EstanteriaScreen extends StatelessWidget {
   const EstanteriaScreen({Key? key}) : super(key: key);
@@ -19,6 +22,7 @@ class EstanteriaScreen extends StatelessWidget {
       providers: [
         ChangeNotifierProvider<EstanteriaProvider>(
             create: (_) => EstanteriaProvider()),
+        ChangeNotifierProvider<SelectProvider>(create: (_) => SelectProvider()),
       ],
       child: _EstanteriaProvider(),
     );
@@ -43,7 +47,8 @@ class _EstanteriaScreen extends StatefulWidget {
   __EstanteriaScreenState createState() => __EstanteriaScreenState();
 }
 
-class __EstanteriaScreenState extends State<_EstanteriaScreen> {
+class __EstanteriaScreenState extends State<_EstanteriaScreen>
+    with SingleTickerProviderStateMixin {
   Finder? ordenar;
   @override
   void initState() {
@@ -51,69 +56,35 @@ class __EstanteriaScreenState extends State<_EstanteriaScreen> {
     widget.provider.init();
   }
 
+  int page = 0;
   @override
   Widget build(BuildContext context) {
+    final pendiente = widget.provider.pendiens;
+    final guardados = widget.provider.guardados;
+
+    Widget curpo;
+    Widget option;
+    if (page == 0) {
+      curpo = EstanteriaPendientes(lista: pendiente);
+      option = OptionsPendientes();
+    } else if (page == 1) {
+      curpo = EstanteriaGuardados(lista: guardados);
+      option = Container();
+    } else {
+      curpo = Configuracion();
+      option = Container();
+    }
+
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Biblioteca'),
-        actions: [
-          Menu(),
-        ],
-      ),
-      body: OrientationBuilder(
-        builder: (_, orientation) {
-          if (orientation == Orientation.portrait) {
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (widget.provider.pendientes.length > 0)
-                  ListaPendiente(
-                    lista: widget.provider.pendientes,
-                    orientation: orientation,
-                  ),
-                if (widget.provider.lista.length > 0)
-                  Expanded(
-                    child: ListaPDF(
-                      lista: widget.provider.lista,
-                      orientation: orientation,
-                    ),
-                  ),
-              ],
-            );
-          } else {
-            return SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  if (widget.provider.pendientes.length > 0)
-                    ListaPendiente(
-                      lista: widget.provider.pendientes,
-                      orientation: orientation,
-                    ),
-                  if (widget.provider.lista.length > 0)
-                    ListaPDF(
-                      lista: widget.provider.lista,
-                      orientation: orientation,
-                    ),
-                ],
-              ),
-            );
-          }
+      backgroundColor: ColorA.gunmetal,
+      body: curpo,
+      floatingActionButton: option,
+      bottomNavigationBar: MainMenu(
+        onTap: (int) {
+          setState(() {
+            page = int;
+          });
         },
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          final res = await widget.provider.getPDF();
-          widget.provider.ordernarFiltrar();
-          if (res['actualizar']) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => MyPDFScreen(pdf: res['pdf'])),
-            );
-          }
-        },
-        child: Icon(Icons.add),
       ),
     );
   }

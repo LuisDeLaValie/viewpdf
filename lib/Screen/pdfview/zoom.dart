@@ -1,16 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:path/path.dart';
 import 'package:provider/provider.dart';
+import 'package:viewpdf/Colors/ColorA.dart';
+
 import 'package:viewpdf/providers/PDFProvider.dart';
 
-class ZoomPage extends StatelessWidget {
-  ZoomPage({Key? key}) : super(key: key);
+class ZoomPage extends StatefulWidget {
+  final void Function(double zoom) onZoomChanged;
+  ZoomPage({Key? key, required this.onZoomChanged}) : super(key: key);
 
+  @override
+  _ZoomPageState createState() => _ZoomPageState();
+}
+
+class _ZoomPageState extends State<ZoomPage> {
   String _porsenaje = "0%";
 
   void calcularZoom(double por) {
     por--;
     _porsenaje = (por * 100 / 2).toStringAsFixed(2) + "%";
   }
+
+  bool enable = false;
 
   @override
   Widget build(BuildContext context) {
@@ -23,17 +34,33 @@ class ZoomPage extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           booton(true, true, pro),
-          Container(
-            color: Colors.white,
-            margin: EdgeInsets.all(5),
-            padding: EdgeInsets.all(8),
-            child: Text(
-              "$_porsenaje",
-              style: TextStyle(color: Colors.black),
-            ),
-          ),
+          nornal(_porsenaje),
           booton(false, true, pro),
         ],
+      ),
+    );
+  }
+
+  Widget nornal(String prsenaje) {
+    return InkWell(
+      onTap: () {
+        setState(() {
+          enable = true;
+        });
+      },
+      child: Container(
+        width: 60,
+        height: 30,
+        // color: ColorA.lightCyan,
+        child: Center(
+          child: Text(
+            "$prsenaje",
+            style: TextStyle(
+              fontSize: 14,
+              color: ColorA.lightCyan,
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -41,24 +68,19 @@ class ZoomPage extends StatelessWidget {
   Widget booton(bool sumres, bool enable, PDFProvider pro) {
     final double size = 30;
 
-    return Container(
-      width: size,
-      height: size,
-      child: ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          primary: Colors.grey[400],
-          padding: EdgeInsets.all(0),
-        ),
-        onPressed: () {
-          if (enable) {
-            if (sumres)
-              pro.zoom += 0.25;
-            else
-              pro.zoom -= 0.25;
-          }
-        },
-        child: sumres ? Icon(Icons.add) : Icon(Icons.remove),
-      ),
+    return IconButton(
+      icon: sumres ? Icon(Icons.arrow_left) : Icon(Icons.arrow_right),
+      onPressed: () {
+        if (enable) {
+          double zoo;
+          if (sumres)
+            zoo = pro.zoom + 0.25;
+          else
+            zoo = pro.zoom - 0.25;
+
+          widget.onZoomChanged(zoo);
+        }
+      },
     );
   }
 }

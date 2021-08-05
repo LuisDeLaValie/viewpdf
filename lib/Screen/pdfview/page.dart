@@ -1,43 +1,69 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:viewpdf/Colors/ColorA.dart';
 import 'package:viewpdf/providers/PDFProvider.dart';
 
-class LaPage extends StatelessWidget {
-  final Function(int)? page;
-  LaPage({Key? key, this.page}) : super(key: key);
+class LaPage extends StatefulWidget {
+  final Function(int) onPageChanged;
+  LaPage({Key? key, required this.onPageChanged}) : super(key: key);
 
-  TextEditingController pageController = new TextEditingController();
+  @override
+  _LaPageState createState() => _LaPageState();
+}
+
+class _LaPageState extends State<LaPage> {
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  bool enable = false;
   @override
   Widget build(BuildContext context) {
     final pro = Provider.of<PDFProvider>(context);
-    pageController.text = pro.page.toString();
     final allPage = pro.allPage;
+    final actualPage = pro.page;
 
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 2),
-      decoration: BoxDecoration(
-        color: Colors.grey.withOpacity(0.4),
-      ),
-      child: Center(
-        child: Row(
-          children: [
-            Container(
-              color: Colors.white,
-              width: 50,
-              height: 30,
-              child: TextField(
-                style: TextStyle(color: Colors.black),
-                controller: pageController,
-                keyboardType: TextInputType.number,
-                onSubmitted: (s) {
-                  pro.actualizar(page: int.parse(s));
-                },
-              ),
+    return enable ? cambiar(actualPage) : nornal(actualPage, allPage);
+  }
+
+  Widget nornal(int actual, int total) {
+    return InkWell(
+      onTap: () {
+        setState(() {
+          enable = true;
+        });
+      },
+      child: Container(
+        width: 60,
+        height: 30,
+        child: Center(
+          child: Text(
+            "$actual/$total",
+            style: TextStyle(
+              fontSize: 14,
+              color: ColorA.lightCyan,
             ),
-            Text("/$allPage")
-          ],
+          ),
         ),
       ),
+    );
+  }
+
+  final pageController = new TextEditingController();
+  Widget cambiar(int actual) {
+    pageController.text = "$actual";
+    return TextField(
+      autofocus: true,
+      style: TextStyle(color: ColorA.lightCyan),
+      controller: pageController,
+      keyboardType: TextInputType.number,
+      onSubmitted: (s) {
+        widget.onPageChanged(int.parse(s));
+        setState(() {
+          enable = false;
+        });
+      },
     );
   }
 }
