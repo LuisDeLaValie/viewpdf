@@ -52,17 +52,12 @@ class PDFProvider with ChangeNotifier {
   }
 
   Future<void> actualizar() async {
-    await EstanteriaDB.instance.actualizar(
-      this._pdf.copyWith(
-            page: this._page,
-            zoom: this._zoom,
-          ),
-    );
+    final nuevo = this._pdf.copyWith(page: this._page, zoom: this._zoom);
+    await EstanteriaDB.instance.actualizar(nuevo.toJson(), id: nuevo.id);
   }
 
   void guardarpdf() async {
-    final path = await ManejoarPDF().moverPdf(this._pdf.path, this._pdf.id);
-    this._pdf = this._pdf.copyWith(isTemporal: false, path: path);
+    this._pdf = this._pdf.copyWith(isTemporal: false,);
     notifyListeners();
   }
 

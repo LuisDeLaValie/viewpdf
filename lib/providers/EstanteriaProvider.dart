@@ -1,4 +1,3 @@
-
 import 'dart:math';
 
 import 'package:file_picker/file_picker.dart';
@@ -27,7 +26,7 @@ class EstanteriaProvider with ChangeNotifier {
 
   List<PDFModel>? get guardados => this._guardados;
 
-  Future<void> litarguardados() async {
+  Future<void> listarguardados() async {
     final noti = this._guardados != null;
     this._guardados = await EstanteriaDB.instance.listar(
       finder: Finder(
@@ -46,18 +45,23 @@ class EstanteriaProvider with ChangeNotifier {
 
   Future<void> init() async {
     await listarpendiens();
-    await litarguardados();
+    await listarguardados();
     this._loader = false;
     notifyListeners();
   }
 
-  Future<void> limpiarlista() async {
+  Future<void> limpiarlista({List<String>? keys}) async {
+    Filter filter;
+    if (keys == null)
+      filter = Filter.equals('isTemporal', true);
+    else
+      filter = Filter.inList('id', keys);
+
     await EstanteriaDB.instance.eliminar(
-      finder: Finder(
-        filter: Filter.equals('isTemporal', true),
-      ),
+      finder: Finder(filter: filter),
     );
     listarpendiens();
+    listarguardados();
 
     notifyListeners();
   }
@@ -75,20 +79,19 @@ class EstanteriaProvider with ChangeNotifier {
       for (var file in result.files) {
         key += "-" + generateRandomString(4);
 
-        final portada = await ManejoarPDF().crearPortada(file.path!, key);
+        final path = await ManejoarPDF().moverPdf(file.path!, key);
 
         pdf = await EstanteriaDB.instance.add(
           PDFModel(
             id: key,
             page: 0,
-            path: file.path!,
-            portada: portada,
+            path: path,
             name: file.name,
             actualizado: DateTime.now(),
           ),
         );
       }
-      return {'pdf': pdf, 'actualizar': result.count > 1};
+      return {'pdf': pdf, 'actualizar': result.count == 1};
     }
     return {'actualizar': false};
   }
@@ -97,5 +100,22 @@ class EstanteriaProvider with ChangeNotifier {
     var r = Random();
     return String.fromCharCodes(
         List.generate(len, (index) => r.nextInt(33) + 89));
+  }
+
+  Future<void> guardarpdf(List<String> keys) async {
+    final res = await EstanteriaDB.instance.actualizar(
+      {'isTemporal': false},
+      filter: Finder(
+        filter: Filter.inList('id', keys),
+      ),
+    );
+
+    this._guardados = null;
+    this._pendiens = null;
+
+    await listarpendiens();
+    await listarguardados();
+
+    notifyListeners();
   }
 }

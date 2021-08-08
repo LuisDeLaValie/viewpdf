@@ -2,10 +2,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:sembast/sembast.dart';
 import 'package:viewpdf/Colors/ColorA.dart';
+import 'package:viewpdf/Screen/CurpoGeneral.dart';
 import 'package:viewpdf/Screen/estanteria/Guardados/EstanteriaGuardados.dart';
 import 'package:viewpdf/Screen/estanteria/pendientes/EstanteriaPendientes.dart';
 import 'package:viewpdf/Screen/estanteria/widget/Menu/MainMenu.dart';
-import 'package:viewpdf/Screen/estanteria/widget/Menu/menu.dart';
+import 'package:viewpdf/Screen/estanteria/widget/Menu/Options.dart';
+import 'package:viewpdf/Screen/estanteria/widget/Menu/optionSelct.dart';
 import 'package:viewpdf/providers/EstanteriaProvider.dart';
 
 import 'package:provider/provider.dart';
@@ -59,33 +61,59 @@ class __EstanteriaScreenState extends State<_EstanteriaScreen>
   int page = 0;
   @override
   Widget build(BuildContext context) {
+    final pro = Provider.of<SelectProvider>(context);
+
     final pendiente = widget.provider.pendiens;
     final guardados = widget.provider.guardados;
 
     Widget curpo;
     Widget option;
+    Widget optionSelect;
     if (page == 0) {
       curpo = EstanteriaPendientes(lista: pendiente);
       option = OptionsPendientes();
+      optionSelect = OptionSelct(lista: pendiente!);
     } else if (page == 1) {
       curpo = EstanteriaGuardados(lista: guardados);
-      option = Container();
+      option = OptionsGuardados();
+      optionSelect = OptionSelct(lista: guardados!);
     } else {
       curpo = Configuracion();
       option = Container();
+      optionSelect = Container();
     }
-
-    return Scaffold(
-      backgroundColor: ColorA.gunmetal,
+    return CurpoGeneral(
+      titulo: tiulo,
+      actions: [
+        if (pro.isSelect) optionSelect,
+      ],
       body: curpo,
       floatingActionButton: option,
       bottomNavigationBar: MainMenu(
         onTap: (int) {
+          titulos(int);
           setState(() {
             page = int;
           });
         },
       ),
     );
+  }
+
+  String tiulo = "Titulo";
+  void titulos(int key) {
+    if (key == 0) {
+      setState(() {
+        tiulo = "Temporal";
+      });
+    } else if (key == 1) {
+      setState(() {
+        tiulo = "Guardados";
+      });
+    } else if (key == 2) {
+      setState(() {
+        tiulo = "Configuracions";
+      });
+    }
   }
 }

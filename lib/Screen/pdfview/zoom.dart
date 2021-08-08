@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:path/path.dart';
 import 'package:provider/provider.dart';
 import 'package:viewpdf/Colors/ColorA.dart';
 
@@ -66,7 +65,6 @@ class _ZoomPageState extends State<ZoomPage> {
   }
 
   Widget booton(bool sumres, bool enable, PDFProvider pro) {
-    final double size = 30;
 
     return IconButton(
       icon: sumres ? Icon(Icons.arrow_left) : Icon(Icons.arrow_right),

@@ -15,16 +15,23 @@ class SelectProvider with ChangeNotifier {
   void selcet(ItemSelect val) {
     int res = this._listaSelects.indexOf(val);
 
-    if (res > 0) {
+    if (res > -1) {
       this._listaSelects.removeAt(res);
     } else {
       this._listaSelects.add(val);
     }
+    if (!this._isSelect) this._isSelect = true;
+    notifyListeners();
+  }
+
+  void multiselcet(List<ItemSelect> val) {
+    this._listaSelects = val;
     notifyListeners();
   }
 
   void cancel() {
     this._isSelect = false;
+    this._listaSelects.clear();
     notifyListeners();
   }
 }

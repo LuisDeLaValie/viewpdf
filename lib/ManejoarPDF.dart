@@ -10,7 +10,7 @@ class ManejoarPDF {
     try {
       final document = await PdfDocument.openFile(path);
       final page = await document.getPage(1);
-      final image = await page.render(width: page.width, height: page.height);
+      final image = await page.render(width: page.width, height: page.height);      
       await page.close();
 
       final String newpath = (await getApplicationDocumentsDirectory()).path;
@@ -31,8 +31,9 @@ class ManejoarPDF {
       String name = basename(path);
 
       final String newpath = (await getApplicationDocumentsDirectory()).path;
+      await Directory("$newpath/$folder").create();
       File file2 = await file.copy("$newpath/$folder/$name");
-      await file.delete();
+      // await file.delete();
 
       return file2.path;
     } catch (e) {
@@ -41,12 +42,9 @@ class ManejoarPDF {
     }
   }
 
-  Future<bool> eliminarPDF(String folder, {String? path}) async {
+  Future<bool> eliminarPDF(String path) async {
     try {
-      if (path != null) File(path).delete();
-
-      final String newpath = (await getApplicationDocumentsDirectory()).path;
-      await Directory("$newpath/$folder").delete(recursive: true);
+      File(path).delete();
 
       return true;
     } catch (e) {

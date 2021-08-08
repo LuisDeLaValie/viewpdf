@@ -51,9 +51,18 @@ class EstanteriaDB {
     return await this._store.delete(this._db!, finder: finder);
   }
 
-  Future<int> actualizar(PDFModel pdf) async {
-    return await this._store.update(this._db!, pdf.toJson(),
-        finder: Finder(filter: Filter.byKey("${pdf.id}")));
+  Future<int> actualizar(Map<String, dynamic> data,
+      {Finder? filter, String? id}) async {
+    Finder? filtrar;
+
+    if (filter == null && id == null)
+      throw ("id y filter no null");
+    else if (filter != null)
+      filtrar = filter;
+    else
+      filtrar = Finder(filter: Filter.byKey(id));
+
+    return await this._store.update(this._db!, data, finder: filtrar);
   }
 
   Future<int> eliminarTemporal() async {
