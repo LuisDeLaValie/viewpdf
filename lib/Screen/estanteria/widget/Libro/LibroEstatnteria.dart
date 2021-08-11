@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'package:viewpdf/Colors/ColorA.dart';
+import 'package:viewpdf/Screen/estanteria/widget/Anuncios.dart';
 import 'package:viewpdf/Screen/estanteria/widget/Libro/portada.dart';
 import 'package:viewpdf/Screen/estanteria/widget/Libro/titulo.dart';
 import 'package:viewpdf/Screen/pdfview/MyPDFScreen.dart';
@@ -32,19 +33,15 @@ class LibroEstatnteria extends StatelessWidget {
       child: InkWell(
         onLongPress: !pro.isSelect
             ? () {
-                pro.selcet(ItemSelect(
-                  index: index,
-                  key: item.id,
-                ));
+                pro.selcet(ItemSelect(index: index, key: item.id));
               }
             : null,
-        onTap: () {
+        onTap: () async {
           if (pro.isSelect) {
-            pro.selcet(ItemSelect(
-              index: index,
-              key: item.id,
-            ));
+            pro.selcet(ItemSelect(index: index, key: item.id));
           } else {
+            await Interstitial.instance.show();
+
             Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => MyPDFScreen(pdf: item)),

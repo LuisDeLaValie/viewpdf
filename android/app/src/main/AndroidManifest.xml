@@ -9,6 +9,8 @@
         android:name="io.flutter.app.FlutterApplication"
         android:label="viewPDF"
         android:icon="@mipmap/ic_launcher">
+
+         
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"
@@ -43,5 +45,10 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+        
+            <!-- Sample AdMob App ID: ca-app-pub-3940256099942544~3347511713 -->
+        <meta-data
+          android:name="com.google.android.gms.ads.APPLICATION_ID"
+          android:value="ca-app-pub-3940256099942544~3347511713"/>
     </application>
 </manifest>

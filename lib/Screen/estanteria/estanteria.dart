@@ -1,10 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:sembast/sembast.dart';
-import 'package:viewpdf/Colors/ColorA.dart';
 import 'package:viewpdf/Screen/CurpoGeneral.dart';
 import 'package:viewpdf/Screen/estanteria/Guardados/EstanteriaGuardados.dart';
 import 'package:viewpdf/Screen/estanteria/pendientes/EstanteriaPendientes.dart';
+import 'package:viewpdf/Screen/estanteria/widget/Anuncios.dart';
 import 'package:viewpdf/Screen/estanteria/widget/Menu/MainMenu.dart';
 import 'package:viewpdf/Screen/estanteria/widget/Menu/Options.dart';
 import 'package:viewpdf/Screen/estanteria/widget/Menu/optionSelct.dart';
@@ -55,6 +55,7 @@ class __EstanteriaScreenState extends State<_EstanteriaScreen>
   @override
   void initState() {
     super.initState();
+    Interstitial.instance.inicio();
     widget.provider.init();
   }
 
@@ -87,7 +88,13 @@ class __EstanteriaScreenState extends State<_EstanteriaScreen>
       actions: [
         if (pro.isSelect) optionSelect,
       ],
-      body: curpo,
+      body: Column(
+        children: [
+          Baner(),
+          SizedBox(height: 10),
+          Expanded(child: curpo),
+        ],
+      ),
       floatingActionButton: option,
       bottomNavigationBar: MainMenu(
         onTap: (int) {

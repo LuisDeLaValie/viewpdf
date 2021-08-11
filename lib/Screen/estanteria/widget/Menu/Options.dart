@@ -1,6 +1,7 @@
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:viewpdf/Screen/estanteria/widget/Anuncios.dart';
 import 'package:viewpdf/Screen/pdfview/MyPDFScreen.dart';
 import 'package:viewpdf/providers/EstanteriaProvider.dart';
 import 'package:viewpdf/providers/SelectProvider.dart';
@@ -37,6 +38,9 @@ class OptionsPendientes extends StatelessWidget {
                     onPressed: () async {
                       final res = await pro.getPDF();
                       await pro.listarpendiens();
+
+                      await Interstitial.instance.show();
+
                       if (res['actualizar']) {
                         Navigator.push(
                           context,

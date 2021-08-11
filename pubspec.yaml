@@ -33,6 +33,7 @@ dependencies:
   native_pdf_renderer: ^3.1.0
   syncfusion_flutter_pdfviewer: ^19.2.47-beta
   animate_do: ^2.0.0
+  google_mobile_ads: ^0.13.3
 
 dev_dependencies:
   flutter_test:

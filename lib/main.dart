@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:viewpdf/DB/ListaData.dart';
 
 import 'DB/db.dart';
@@ -6,6 +7,9 @@ import 'Screen/estanteria/estanteria.dart';
 
 main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  MobileAds.instance.initialize();
+
   await DB.instance.init();
   await EstanteriaDB.instance.init();
 
