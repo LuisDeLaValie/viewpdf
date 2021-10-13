@@ -77,6 +77,7 @@ class __MyPDFScreenState extends State<_MyPDFScreen> {
     return WillPopScope(
       onWillPop: () async {
         await widget.provider.actualizar();
+        // Navigator.pop(context, widget.provider.pdf);
         return true;
       },
       child: Scaffold(
