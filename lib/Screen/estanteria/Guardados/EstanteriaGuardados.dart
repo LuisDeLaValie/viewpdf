@@ -40,7 +40,7 @@ class EstanteriaGuardados extends StatelessWidget {
             final li = LibroEstatnteria(
               item: e,
               onBack: () {
-                pro.listarpendiens();
+                pro.listarguardados();
               },
               index: key,
               slect: sel > -1,
