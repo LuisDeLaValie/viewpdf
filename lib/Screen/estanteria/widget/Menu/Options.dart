@@ -24,7 +24,7 @@ class OptionsPendientes extends StatelessWidget {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  if (pro.pendiens!.length > 1)
+                  if ((pro.pendiens?.length ?? 0) > 1)
                     BounceInRight(
                       child: FloatingActionButton(
                         onPressed: () async {

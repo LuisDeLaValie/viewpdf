@@ -62,33 +62,14 @@ class __EstanteriaScreenState extends State<_EstanteriaScreen>
   @override
   Widget build(BuildContext context) {
     final pro = Provider.of<SelectProvider>(context);
-
-    final pendiente = widget.provider.pendiens;
-    final guardados = widget.provider.guardados;
-
-    Widget curpo;
-    Widget option;
-    Widget optionSelect;
-    if (page == 0) {
-      curpo = EstanteriaPendientes(lista: pendiente);
-      option = OptionsPendientes();
-      optionSelect = OptionSelct(lista: pendiente!);
-    } else if (page == 1) {
-      curpo = EstanteriaGuardados(lista: guardados);
-      option = OptionsGuardados();
-      optionSelect = OptionSelct(lista: guardados!);
-    } else {
-      curpo = Configuracion();
-      option = Container();
-      optionSelect = Container();
-    }
+    final data = viewvista();
     return CurpoGeneral(
       titulo: tiulo,
       actions: [
-        if (pro.isSelect) optionSelect,
+        if (pro.isSelect) data[2],
       ],
-      body: curpo,
-      floatingActionButton: option,
+      body: data[0],
+      floatingActionButton: data[1],
       bottomNavigationBar: MainMenu(
         onTap: (int) {
           titulos(int);
@@ -115,5 +96,31 @@ class __EstanteriaScreenState extends State<_EstanteriaScreen>
         tiulo = "Configuracions";
       });
     }
+  }
+
+  viewvista() {
+    Widget curpo;
+    Widget option;
+    Widget optionSelect;
+
+    if (page == 0) {
+      curpo = EstanteriaPendientes();
+      option = OptionsPendientes();
+      optionSelect = OptionSelct(
+        vista: true,
+      );
+    } else if (page == 1) {
+      curpo = EstanteriaGuardados();
+      option = OptionsGuardados();
+      optionSelect = OptionSelct(
+        vista: false,
+      );
+    } else {
+      curpo = Configuracion();
+      option = Container();
+      optionSelect = Container();
+    }
+
+    return [curpo, option, optionSelect];
   }
 }
