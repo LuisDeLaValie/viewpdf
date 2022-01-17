@@ -1,38 +1,30 @@
-import 'dart:math';
+
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:sembast/sembast.dart';
-import 'package:viewpdf/DB/ListaData.dart';
-import 'package:viewpdf/ManejoarPDF.dart';
 import 'package:viewpdf/model/PDFModel.dart';
+import 'package:viewpdf/services/libros.dart';
 
 class EstanteriaProvider with ChangeNotifier {
-  List<PDFModel>? _guardados;
+  List<PDFModel?>? _guardados;
   bool _loader = true;
-  List<PDFModel>? _pendiens;
+  List<PDFModel?>? _pendiens;
 
-  List<PDFModel>? get pendiens => this._pendiens;
+  List<PDFModel?>? get pendiens => this._pendiens;
 
   Future<void> listarpendiens() async {
     final noti = this._pendiens != null;
-    this._pendiens = await EstanteriaDB.instance.listar(
-      finder: Finder(
-        filter: Filter.equals("isTemporal", true),
-      ),
-    );
+
+    this._pendiens = await Libros.listarLibros(true);
+
     if (noti) notifyListeners();
   }
 
-  List<PDFModel>? get guardados => this._guardados;
+  List<PDFModel?>? get guardados => this._guardados;
 
   Future<void> listarguardados() async {
     final noti = this._guardados != null;
-    this._guardados = await EstanteriaDB.instance.listar(
-      finder: Finder(
-        filter: Filter.equals("isTemporal", false),
-      ),
-    );
+    this._guardados = await Libros.listarLibros(false);
     if (noti) notifyListeners();
   }
 
@@ -51,15 +43,7 @@ class EstanteriaProvider with ChangeNotifier {
   }
 
   Future<void> limpiarlista({List<String>? keys}) async {
-    Filter filter;
-    if (keys == null)
-      filter = Filter.equals('isTemporal', true);
-    else
-      filter = Filter.inList('id', keys);
-
-    await EstanteriaDB.instance.eliminar(
-      finder: Finder(filter: filter),
-    );
+    await Libros.limpiar(keys: keys);
     listarpendiens();
     listarguardados();
 
@@ -75,40 +59,16 @@ class EstanteriaProvider with ChangeNotifier {
 
     if (result != null) {
       PDFModel? pdf;
-      String key = DateTime.now().millisecondsSinceEpoch.toString();
       for (var file in result.files) {
-        key += "-" + generateRandomString(4);
-
-        final path = await ManejoarPDF().moverPdf(file.path!, key);
-
-        pdf = await EstanteriaDB.instance.add(
-          PDFModel(
-            id: key,
-            page: 0,
-            path: path,
-            name: file.name,
-            actualizado: DateTime.now(),
-          ),
-        );
+        pdf = await Libros.nuevoPDF(file.name, file.path!);
       }
       return {'pdf': pdf, 'actualizar': result.count == 1};
     }
     return {'actualizar': false};
   }
 
-  String generateRandomString(int len) {
-    var r = Random();
-    return String.fromCharCodes(
-        List.generate(len, (index) => r.nextInt(33) + 89));
-  }
-
   Future<void> guardarpdf(List<String> keys) async {
-    final res = await EstanteriaDB.instance.actualizar(
-      {'isTemporal': false},
-      filter: Finder(
-        filter: Filter.inList('id', keys),
-      ),
-    );
+    await Libros.guardar(keys);
 
     this._guardados = null;
     this._pendiens = null;

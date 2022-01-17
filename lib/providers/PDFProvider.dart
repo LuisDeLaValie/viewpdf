@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:sembast/sembast.dart';
-import 'package:viewpdf/DB/ListaData.dart';
-import 'package:viewpdf/ManejoarPDF.dart';
+import 'package:viewpdf/DB/libreria_Store.dart';
+import 'package:viewpdf/services/ManejoarPDF.dart';
 import 'package:viewpdf/model/PDFModel.dart';
 
 class PDFProvider with ChangeNotifier {
   int _allPage = 0;
   bool _loader = true;
   int _page = 0;
-  PDFModel _pdf = PDFModel();
+  late PDFModel _pdf;
   double _zoom = 0.0;
 
   void init(PDFModel pdf) {
@@ -52,17 +52,22 @@ class PDFProvider with ChangeNotifier {
   }
 
   Future<void> actualizar() async {
-    final nuevo = this._pdf.copyWith(page: this._page, zoom: this._zoom);
-    await EstanteriaDB.instance.actualizar(nuevo.toJson(), id: nuevo.id);
+    this._pdf
+      ..page = this._page
+      ..zoom = this._zoom;
+
+    await LibreriaStore.instance
+        .actualizar(this._pdf.toMap(), id: this._pdf.id);
   }
 
   void guardarpdf() async {
-    this._pdf = this._pdf.copyWith(isTemporal: false,);
+    this._pdf.isTemporal = false;
+
     notifyListeners();
   }
 
   Future<void> eliminar() async {
-    await EstanteriaDB.instance.eliminar(
+    await LibreriaStore.instance.eliminar(
       finder: Finder(
         filter: Filter.equals('id', this._pdf.id),
       ),

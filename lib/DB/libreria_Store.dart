@@ -2,54 +2,46 @@ import 'dart:developer';
 
 import 'package:sembast/sembast.dart';
 import 'package:sembast/timestamp.dart';
+import 'package:viewpdf/DB/db.dart';
 import 'package:viewpdf/model/PDFModel.dart';
 
-import 'db.dart';
-
-class EstanteriaDB {
-  EstanteriaDB._internal();
-  static EstanteriaDB _instance = EstanteriaDB._internal();
-  static EstanteriaDB get instance => EstanteriaDB._instance;
+class LibreriaStore {
+  LibreriaStore._internal();
+  static LibreriaStore _instance = LibreriaStore._internal();
+  static LibreriaStore get instance => LibreriaStore._instance;
 
   final Database? _db = DB.instance.database;
-  final StoreRef<String, Map> _store = StoreRef<String, Map>("estanteria");
-
-  int lenggth = 0;
-
-  Future<void> init() async {
-    lenggth = (await listar()).length;
-  }
+  final StoreRef<String, Map> _store = StoreRef<String, Map>("libreria");
 
   Future<List<PDFModel>> listar({Finder? finder}) async {
-    List<RecordSnapshot<String, Map>> snapshots =
-        await this._store.find(this._db!, finder: finder);
-    lenggth = snapshots.length;
+    final snapshots = await this._store.find(this._db!, finder: finder);
     return snapshots
-        .map((RecordSnapshot<String, Map> snap) =>
-            PDFModel.fromJson(snap.value as Map<String, dynamic>))
+        .map((snap) => PDFModel.fromMap(snap.value as Map<String, dynamic>))
         .toList();
   }
 
   Future<PDFModel> add(PDFModel pdf) async {
-    PDFModel nuevoPDF = PDFModel.fromJson((await this
-        ._store
-        .record(pdf.id)
-        .put(this._db!, pdf.toJson()) as Map<String, dynamic>));
-    lenggth++;
+    final neow = await this._store.record(pdf.id).put(this._db!, pdf.toMap())
+        as Map<String, dynamic>;
+
+    PDFModel nuevoPDF = PDFModel.fromMap(neow);
+
     return nuevoPDF;
   }
 
   Future<PDFModel> traer(String? id) async {
-    List<RecordSnapshot<String, Map>> data = await this
-        ._store
-        .find(this._db!, finder: Finder(filter: Filter.byKey(id)));
+    final data = await this._store.find(
+          this._db!,
+          finder: Finder(
+            filter: Filter.byKey(id),
+          ),
+        );
 
-    return PDFModel.fromJson(data[0].value as Map<String, dynamic>);
+    return PDFModel.fromMap(data[0].value as Map<String, dynamic>);
   }
 
-  Future<int> eliminar({Finder? finder}) async {
-    return await this._store.delete(this._db!, finder: finder);
-  }
+  Future<int> eliminar({Finder? finder}) =>
+      this._store.delete(this._db!, finder: finder);
 
   Future<int> actualizar(Map<String, dynamic> data,
       {Finder? filter, String? id}) async {
@@ -78,7 +70,6 @@ class EstanteriaDB {
         ]),
       ),
     );
-    lenggth -= eliminados;
     log("Se eliminaron $eliminados temporales");
 
     return eliminados;

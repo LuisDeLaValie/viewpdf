@@ -21,18 +21,19 @@ environment:
   sdk: '>=2.13.0 <3.0.0'
 
 dependencies:
+  animate_do: ^2.0.0
+  convex_bottom_bar: ^3.0.0
+  cupertino_icons: ^1.0.3
+  file_picker: ^3.0.3
   flutter:
     sdk: flutter
+  hardware_buttons: ^1.0.0
+  native_pdf_renderer: ^3.1.0
   path: ^1.8.0
   path_provider: ^2.0.2
-  file_picker: ^3.0.3
-  sembast: ^3.1.0+2
   provider: ^5.0.0
-  cupertino_icons: ^1.0.3
-  convex_bottom_bar: ^3.0.0
-  native_pdf_renderer: ^3.1.0
+  sembast: ^3.1.0+2
   syncfusion_flutter_pdfviewer: ^19.2.47-beta
-  animate_do: ^2.0.0
 
 dev_dependencies:
   flutter_test:
@@ -40,7 +41,6 @@ dev_dependencies:
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
-
 # The following section is specific to Flutter.
 flutter:
 
@@ -53,13 +53,10 @@ flutter:
   # assets:
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
-
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
-
   # For details regarding adding assets from package dependencies, see
   # https://flutter.dev/assets-and-images/#from-packages
-
   # To add custom fonts to your application, add a fonts section here,
   # in this "flutter" section. Each entry in this list should have a
   # "family" key with the font family name, and a "fonts" key with a

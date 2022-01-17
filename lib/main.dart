@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:viewpdf/DB/ListaData.dart';
+import 'package:viewpdf/DB/libreria_Store.dart';
 
 import 'DB/db.dart';
 import 'Screen/estanteria/estanteria.dart';
@@ -7,9 +7,8 @@ import 'Screen/estanteria/estanteria.dart';
 main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await DB.instance.init();
-  await EstanteriaDB.instance.init();
 
-  EstanteriaDB.instance.eliminarTemporal();
+  LibreriaStore.instance.eliminarTemporal();
   runApp(MyApp());
 }
 

@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:sembast/sembast.dart';
-import 'package:viewpdf/Colors/ColorA.dart';
 import 'package:viewpdf/Screen/CurpoGeneral.dart';
 import 'package:viewpdf/Screen/estanteria/Guardados/EstanteriaGuardados.dart';
 import 'package:viewpdf/Screen/estanteria/pendientes/EstanteriaPendientes.dart';

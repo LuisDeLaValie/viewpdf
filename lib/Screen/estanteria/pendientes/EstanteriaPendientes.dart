@@ -39,7 +39,7 @@ class EstanteriaPendientes extends StatelessWidget {
                 .indexWhere((element) => element!.index == key);
 
             final li = LibroEstatnteria(
-              item: e,
+              item: e!,
               onBack: () {
                 pro.listarpendiens();
               },

@@ -1,6 +1,4 @@
 import 'dart:async';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
@@ -80,28 +78,35 @@ class __MyPDFScreenState extends State<_MyPDFScreen> {
         // Navigator.pop(context, widget.provider.pdf);
         return true;
       },
-      child: Scaffold(
-        appBar: AppBar(
-          backgroundColor: ColorA.bdazzledBlue,
-          title: LaPage(
-            onPageChanged: (int) {
-              controller.jumpToPage(int);
-            },
-          ),
-          actions: [
-            ZoomPage(
-              onZoomChanged: (double zoom) {
-                controller.zoomLevel = zoom;
+      child: RawKeyboardListener(
+        autofocus:true,
+        focusNode: FocusNode(),
+        onKey: (val) {
+          print("OnKey");
+        },
+        child: Scaffold(
+          appBar: AppBar(
+            backgroundColor: ColorA.bdazzledBlue,
+            title: LaPage(
+              onPageChanged: (int) {
+                controller.jumpToPage(int);
               },
             ),
-            myPopMenu()
-          ],
-        ),
-        body: ViewPDF(
-          pdfViewController: controller,
-          loader: () {
-            // controller.jumpToPage(widget.pdf.page);
-          },
+            actions: [
+              ZoomPage(
+                onZoomChanged: (double zoom) {
+                  controller.zoomLevel = zoom;
+                },
+              ),
+              myPopMenu()
+            ],
+          ),
+          body: ViewPDF(
+            pdfViewController: controller,
+            loader: () {
+              // controller.jumpToPage(widget.pdf.page);
+            },
+          ),
         ),
       ),
     );

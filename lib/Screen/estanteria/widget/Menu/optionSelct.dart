@@ -15,7 +15,7 @@ class OptionSelct extends StatelessWidget {
     final pro = Provider.of<SelectProvider>(context);
     final pro2 = Provider.of<EstanteriaProvider>(context);
 
-    List<PDFModel> lista = [];
+    List<PDFModel?> lista = [];
     if (vista)
       lista = pro2.pendiens ?? [];
     else
@@ -33,7 +33,7 @@ class OptionSelct extends StatelessWidget {
             onPressed: () {
               int ky = 0;
               final res = lista.map<ItemSelect>((e) {
-                final a = ItemSelect(index: ky, key: e.id);
+                final a = ItemSelect(index: ky, key: e!.id);
                 ky++;
                 return a;
               }).toList();

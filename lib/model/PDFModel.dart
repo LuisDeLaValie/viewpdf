@@ -1,75 +1,52 @@
+import 'dart:convert';
+
 import 'package:sembast/timestamp.dart';
 
 class PDFModel {
-  final String id;
-  final int page;
-  final String path;
-  // final String portada;
-  final String name;
-  final DateTime? actualizado;
-  final bool isTemporal;
-  final double zoom;
-  // final bool isSelect;
+  String id = "";
+  int page = 0;
+  String path = "";
+  String name;
+  DateTime actualizado;
+  bool isTemporal = true;
+  double zoom = 1;
 
   PDFModel({
     this.id = "",
     this.page = 0,
     this.path = "",
-    // this.portada = "",
-    this.name = "",
-    this.actualizado,
+    required this.name,
+    required this.actualizado,
     this.isTemporal = true,
     this.zoom = 1,
-    // this.isSelect = false,
   });
 
-  static PDFModel fromJson(Map<String, dynamic> map) {
-    return PDFModel(
-      id: map['id'],
-      page: map['page'],
-      path: map['path'],
-      // portada: map['portada'],
-      name: map['name'],
-      actualizado: (map['actualizado'] as Timestamp).toDateTime(),
-      isTemporal: map['isTemporal'],
-      zoom: map['zoom'],
-    );
-  }
-
-  Map<String, dynamic> toJson() {
+  Map<String, dynamic> toMap() {
     return {
-      'id': this.id,
-      'page': this.page,
-      'path': this.path,
-      // 'portada': this.portada,
-      'name': this.name,
-      'actualizado': Timestamp.fromDateTime(this.actualizado!),
-      'isTemporal': this.isTemporal,
-      'zoom': this.zoom
+      'id': id,
+      'page': page,
+      'path': path,
+      'name': name,
+      'actualizado': Timestamp.fromDateTime(actualizado),
+      'isTemporal': isTemporal,
+      'zoom': zoom,
     };
   }
 
-  PDFModel copyWith({
-    String? id,
-    int? page,
-    String? path,
-    // String? portada,
-    String? name,
-    DateTime? actualizado,
-    bool? isTemporal,
-    double? zoom,
-    // bool? isSelect,
-  }) {
+  factory PDFModel.fromMap(Map<String, dynamic> map) {
     return PDFModel(
-      id: id ?? this.id,
-      page: page ?? this.page,
-      path: path ?? this.path,
-      // portada: portada ?? this.portada,
-      name: name ?? this.name,
-      actualizado: actualizado ?? this.actualizado,
-      isTemporal: isTemporal ?? this.isTemporal,
-      zoom: zoom ?? this.zoom,
-      // isSelect: isSelect ?? this.isSelect,
+      id: map['id'] ?? '',
+      page: map['page']?.toInt() ?? 0,
+      path: map['path'] ?? '',
+      name: map['name'] ?? '',
+      actualizado: (map['actualizado'] as Timestamp).toDateTime(),
+      isTemporal: map['isTemporal'] ?? false,
+      zoom: map['zoom']?.toDouble() ?? 0.0,
     );
   }
+
+  String toJson() => json.encode(toMap());
+
+  factory PDFModel.fromJson(String source) =>
+      PDFModel.fromMap(json.decode(source));
 }
