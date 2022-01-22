@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:sembast/sembast.dart';
-import 'package:viewpdf/DB/libreria_Store.dart';
 import 'package:viewpdf/services/ManejoarPDF.dart';
 import 'package:viewpdf/model/PDFModel.dart';
 
@@ -56,8 +54,7 @@ class PDFProvider with ChangeNotifier {
       ..page = this._page
       ..zoom = this._zoom;
 
-    await LibreriaStore.instance
-        .actualizar(this._pdf.toMap(), id: this._pdf.id);
+    this._pdf.save();
   }
 
   void guardarpdf() async {
@@ -67,11 +64,8 @@ class PDFProvider with ChangeNotifier {
   }
 
   Future<void> eliminar() async {
-    await LibreriaStore.instance.eliminar(
-      finder: Finder(
-        filter: Filter.equals('id', this._pdf.id),
-      ),
-    );
-    await ManejoarPDF().eliminarPDF(this._pdf.id);
+    await ManejoarPDF().eliminarPDF(this._pdf.path);
+    this._pdf.delete();
+    
   }
 }

@@ -9,16 +9,18 @@ import 'package:viewpdf/model/PDFModel.dart';
 import 'package:viewpdf/providers/SelectProvider.dart';
 
 class LibroEstatnteria extends StatelessWidget {
+  final String nombre;
+  final String kei;
   final PDFModel item;
-  final int index;
   final bool slect;
-  final Function() onBack;
+  final Function()? onBack;
   const LibroEstatnteria({
     Key? key,
     required this.item,
-    required this.index,
     required this.slect,
-    required this.onBack,
+    this.onBack,
+    required this.nombre,
+    required this.kei,
   }) : super(key: key);
 
   void select() {}
@@ -32,24 +34,20 @@ class LibroEstatnteria extends StatelessWidget {
       child: InkWell(
         onLongPress: !pro.isSelect
             ? () {
-                pro.selcet(ItemSelect(
-                  index: index,
-                  key: item.id,
-                ));
+                pro.selcet(kei);
               }
             : null,
         onTap: () {
           if (pro.isSelect) {
-            pro.selcet(ItemSelect(
-              index: index,
-              key: item.id,
-            ));
+            pro.selcet(kei);
           } else {
             Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => MyPDFScreen(pdf: item)),
             ).then((value) {
-              onBack();
+              if (onBack != null) {
+                onBack!();
+              }
             });
           }
         },
@@ -58,7 +56,7 @@ class LibroEstatnteria extends StatelessWidget {
             Column(
               children: [
                 Expanded(child: Portada(path: item.path)),
-                Titulo(titulo: item.name),
+                Titulo(titulo: nombre),
               ],
             ),
             if (slect)

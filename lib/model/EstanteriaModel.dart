@@ -1,70 +1,29 @@
-import 'dart:convert';
+import 'package:hive/hive.dart';
 
-class EstanteriaModel {
-  String key;
+import 'PDFModel.dart';
+
+part 'EstanteriaModel.g.dart';
+
+@HiveType(typeId: 2)
+class EstanteriaModel extends HiveObject {
+  @HiveField(0)
+  String id;
+  @HiveField(1)
   String nombre;
-  List<LibroEstanteria> libros;
+  @HiveField(2)
+  HiveList<PDFModel> libros;
+  @HiveField(3)
   bool isColeection;
-  
+
   EstanteriaModel({
-    required this.key,
+    required this.id,
     required this.nombre,
     required this.libros,
     required this.isColeection,
   });
 
-  Map<String, dynamic> toMap() {
-    return {
-      'key': key,
-      'nombre': nombre,
-      'libros': libros.map((x) => x.toMap()).toList(),
-      'isColeection': isColeection,
-    };
-  }
-
-  factory EstanteriaModel.fromMap(Map<String, dynamic> map) {
-    return EstanteriaModel(
-      key: map['key'] ?? '',
-      nombre: map['nombre'] ?? '',
-      libros: List<LibroEstanteria>.from(map['libros']?.map((x) => LibroEstanteria.fromMap(x))),
-      isColeection: map['isColeection'] ?? false,
-    );
-  }
-
-  String toJson() => json.encode(toMap());
-
-  factory EstanteriaModel.fromJson(String source) => EstanteriaModel.fromMap(json.decode(source));
-
   @override
   String toString() {
-    return 'EstanteriaModel(key: $key, nombre: $nombre, libros: $libros, isColeection: $isColeection)';
+    return 'EstanteriaModel( key: $key, libros: $libros)';
   }
-}
-
-class LibroEstanteria {
-  String key;
-  String nombre;
-  
-  LibroEstanteria({
-    required this.key,
-    required this.nombre,
-  });
-
-  Map<String, dynamic> toMap() {
-    return {
-      'key': key,
-      'nombre': nombre,
-    };
-  }
-
-  factory LibroEstanteria.fromMap(Map<String, dynamic> map) {
-    return LibroEstanteria(
-      key: map['key'] ?? '',
-      nombre: map['nombre'] ?? '',
-    );
-  }
-
-  String toJson() => json.encode(toMap());
-
-  factory LibroEstanteria.fromJson(String source) => LibroEstanteria.fromMap(json.decode(source));
 }

@@ -25,7 +25,7 @@ class OptionsPendientes extends StatelessWidget {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  if ((pro.pendiens?.length ?? 0) > 1)
+                  if (pro.pendienteKes.length > 1)
                     BounceInRight(
                       child: FloatingActionButton(
                         onPressed: () async {
@@ -37,7 +37,6 @@ class OptionsPendientes extends StatelessWidget {
                   FloatingActionButton(
                     onPressed: () async {
                       final res = await pro.getPDF();
-                      await pro.listarpendiens();
                       if (res['actualizar']) {
                         Navigator.push(
                           context,
@@ -62,8 +61,7 @@ class OptionsPendientes extends StatelessWidget {
                   children: [
                     FloatingActionButton(
                       onPressed: () async {
-                        final lis =
-                            proSelect.listaSelects.map((e) => e!.key).toList();
+                        final lis = proSelect.listaSelects;
                         await pro.guardarpdf(lis);
                         proSelect.cancel();
                       },
@@ -71,8 +69,7 @@ class OptionsPendientes extends StatelessWidget {
                     ),
                     FloatingActionButton(
                       onPressed: () async {
-                        final lis =
-                            proSelect.listaSelects.map((e) => e!.key).toList();
+                        final lis = proSelect.listaSelects;
                         await pro.limpiarlista(keys: lis);
                         proSelect.cancel();
                       },
@@ -109,17 +106,16 @@ class OptionsGuardados extends StatelessWidget {
                   children: [
                     FloatingActionButton(
                       onPressed: () {
-                        final lis =
-                            proSelect.listaSelects.map((e) => e!.key).toList();
+                        final lis = proSelect.listaSelects;
                         crearColeccion(lis, context);
+                        proSelect.cancel();
                       },
                       child: Icon(Icons.add_box),
                     ),
                     SizedBox(width: 10),
                     FloatingActionButton(
                       onPressed: () async {
-                        final lis =
-                            proSelect.listaSelects.map((e) => e!.key).toList();
+                        final lis = proSelect.listaSelects;
                         await pro.limpiarlista(keys: lis);
                         proSelect.cancel();
                       },
@@ -187,7 +183,7 @@ class _CrearColeccion extends StatelessWidget {
         TextButton(
           child: Text('Crear'),
           onPressed: () {
-            Libros.crearColeccion(controller.text, lista);
+            Libros().crearColeccion(controller.text, lista);
             Navigator.of(context).pop();
 
             print("nombre: ${controller.text} :: lista: $lista");

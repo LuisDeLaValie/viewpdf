@@ -1,14 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:viewpdf/DB/libreria_Store.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
-import 'DB/db.dart';
 import 'Screen/estanteria/estanteria.dart';
+import 'db/EstanteriaHive.dart';
+import 'db/Libro_hive.dart';
+import 'model/EstanteriaModel.dart';
+import 'model/PDFModel.dart';
 
 main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await DB.instance.init();
 
-  LibreriaStore.instance.eliminarTemporal();
+  await Hive.initFlutter();
+  Hive.registerAdapter(PDFModelAdapter());
+  Hive.registerAdapter(EstanteriaModelAdapter());
+
+  await EstanteriaHive.instance.init();
+  await LibroHive.instance.init();
+
   runApp(MyApp());
 }
 

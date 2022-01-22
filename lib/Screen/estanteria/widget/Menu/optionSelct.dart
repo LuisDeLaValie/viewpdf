@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'package:viewpdf/Colors/ColorA.dart';
-import 'package:viewpdf/model/PDFModel.dart';
 import 'package:viewpdf/providers/EstanteriaProvider.dart';
 import 'package:viewpdf/providers/SelectProvider.dart';
 
@@ -15,11 +14,11 @@ class OptionSelct extends StatelessWidget {
     final pro = Provider.of<SelectProvider>(context);
     final pro2 = Provider.of<EstanteriaProvider>(context);
 
-    List<PDFModel?> lista = [];
+    List<String> lista = [];
     if (vista)
-      lista = pro2.pendiens ?? [];
+      lista = pro2.pendienteKes;
     else
-      lista = pro2.guardados ?? [];
+      lista = pro2.guardadosKesy;
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
@@ -31,13 +30,7 @@ class OptionSelct extends StatelessWidget {
               color: ColorA.burntSienna,
             ),
             onPressed: () {
-              int ky = 0;
-              final res = lista.map<ItemSelect>((e) {
-                final a = ItemSelect(index: ky, key: e!.id);
-                ky++;
-                return a;
-              }).toList();
-              pro.multiselcet(res);
+              pro.multiselcet(lista);
             },
           ),
         ),

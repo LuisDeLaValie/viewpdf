@@ -1,16 +1,17 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:sembast/sembast.dart';
-import 'package:viewpdf/Screen/CurpoGeneral.dart';
-import 'package:viewpdf/Screen/estanteria/Guardados/EstanteriaGuardados.dart';
-import 'package:viewpdf/Screen/estanteria/pendientes/EstanteriaPendientes.dart';
-import 'package:viewpdf/Screen/estanteria/widget/Menu/MainMenu.dart';
-import 'package:viewpdf/Screen/estanteria/widget/Menu/Options.dart';
-import 'package:viewpdf/Screen/estanteria/widget/Menu/optionSelct.dart';
-import 'package:viewpdf/providers/EstanteriaProvider.dart';
-
 import 'package:provider/provider.dart';
 import 'package:viewpdf/providers/SelectProvider.dart';
+
+import '../CurpoGeneral.dart';
+import '../estanteria/Guardados/EstanteriaGuardados.dart';
+import '../estanteria/pendientes/EstanteriaPendientes.dart';
+import '../estanteria/widget/Menu/MainMenu.dart';
+import '../estanteria/widget/Menu/Options.dart';
+import '../estanteria/widget/Menu/optionSelct.dart';
+
+import '../../providers/EstanteriaProvider.dart';
+
 
 import 'configuracion/Configuracion.dart';
 
@@ -50,7 +51,7 @@ class _EstanteriaScreen extends StatefulWidget {
 
 class __EstanteriaScreenState extends State<_EstanteriaScreen>
     with SingleTickerProviderStateMixin {
-  Finder? ordenar;
+  
   @override
   void initState() {
     super.initState();

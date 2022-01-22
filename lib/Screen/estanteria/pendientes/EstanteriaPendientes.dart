@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+
 import 'package:provider/provider.dart';
 
 import 'package:viewpdf/Screen/estanteria/widget/Libro/LibroEstatnteria.dart';
 import 'package:viewpdf/Screen/estanteria/widget/NoLibro.dart';
+import 'package:viewpdf/db/Libro_hive.dart';
+import 'package:viewpdf/model/PDFModel.dart';
 import 'package:viewpdf/providers/EstanteriaProvider.dart';
 import 'package:viewpdf/providers/SelectProvider.dart';
 
@@ -12,45 +16,37 @@ class EstanteriaPendientes extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final pro = Provider.of<EstanteriaProvider>(context);
+
     final pro2 = Provider.of<SelectProvider>(context);
 
-    if (pro.pendiens == null || pro.pendiens!.length == 0)
-      return Center(
-        child: NoLibro(
-          onRefres: () {
-            pro.listarpendiens();
-          },
-        ),
-      );
-    int key = 0;
-    return RefreshIndicator(
-      onRefresh: () async {
-        pro2.cancel();
-        await pro.listarpendiens();
+    return ValueListenableBuilder<Box<PDFModel>>(
+      valueListenable: Hive.box<PDFModel>(LibroHive.instance.name).listenable(),
+      builder: (context, box, widget) {
+        var list = box.values.where((element) => element.isTemporal).toList();
+        pro.pendienteKes.clear();
+        if (list.length == 0) {
+          return Center(
+            child: NoLibro(),
+          );
+        } else {
+          return GridView.count(
+            crossAxisCount: 3,
+            crossAxisSpacing: 1.5,
+            mainAxisSpacing: 1.5,
+            childAspectRatio: 0.6,
+            children: list.map((e) {
+              final sel = pro2.listaSelects.contains(e.id);
+              pro.pendienteKes.add(e.key);
+              return LibroEstatnteria(
+                item: e,
+                slect: sel,
+                kei: e.key,
+                nombre: e.name,
+              );
+            }).toList(),
+          );
+        }
       },
-      child: Container(
-        child: GridView.count(
-          crossAxisCount: 3,
-          crossAxisSpacing: 1.5,
-          mainAxisSpacing: 1.5,
-          childAspectRatio: 0.6,
-          children: pro.pendiens!.map((e) {
-            final sel = pro2.listaSelects
-                .indexWhere((element) => element!.index == key);
-
-            final li = LibroEstatnteria(
-              item: e!,
-              onBack: () {
-                pro.listarpendiens();
-              },
-              index: key,
-              slect: sel > -1,
-            );
-            key++;
-            return li;
-          }).toList(),
-        ),
-      ),
     );
   }
 }

@@ -9,14 +9,14 @@ class SelectProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  List<ItemSelect?> _listaSelects = [];
-  List<ItemSelect?> get listaSelects => this._listaSelects;
+  List<String> _listaSelects = [];
+  List<String> get listaSelects => this._listaSelects;
 
-  void selcet(ItemSelect val) {
-    int res = this._listaSelects.indexOf(val);
+  void selcet(String val) {
+    bool res = this._listaSelects.contains(val);
 
-    if (res > -1) {
-      this._listaSelects.removeAt(res);
+    if (res) {
+      this._listaSelects.remove(res);
     } else {
       this._listaSelects.add(val);
     }
@@ -24,7 +24,7 @@ class SelectProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  void multiselcet(List<ItemSelect> val) {
+  void multiselcet(List<String> val) {
     this._listaSelects = val;
     notifyListeners();
   }
