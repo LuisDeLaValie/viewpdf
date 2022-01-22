@@ -49,4 +49,9 @@ class PDFModel {
 
   factory PDFModel.fromJson(String source) =>
       PDFModel.fromMap(json.decode(source));
+
+  @override
+  String toString() {
+    return 'PDFModel(id: $id, page: $page, path: $path, name: $name, actualizado: $actualizado, isTemporal: $isTemporal, zoom: $zoom)';
+  }
 }

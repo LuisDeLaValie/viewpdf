@@ -25,6 +25,7 @@ class EstanteriaProvider with ChangeNotifier {
   Future<void> listarguardados() async {
     final noti = this._guardados != null;
     this._guardados = await Libros.listarLibros(false);
+    print(this._guardados);
     if (noti) notifyListeners();
   }
 

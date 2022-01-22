@@ -50,4 +50,7 @@ class ItemSelect {
 
   @override
   int get hashCode => index.hashCode ^ key.hashCode;
+
+  @override
+  String toString() => 'ItemSelect(index: $index, key: $key)';
 }

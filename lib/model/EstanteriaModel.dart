@@ -34,6 +34,11 @@ class EstanteriaModel {
   String toJson() => json.encode(toMap());
 
   factory EstanteriaModel.fromJson(String source) => EstanteriaModel.fromMap(json.decode(source));
+
+  @override
+  String toString() {
+    return 'EstanteriaModel(key: $key, nombre: $nombre, libros: $libros, isColeection: $isColeection)';
+  }
 }
 
 class LibroEstanteria {

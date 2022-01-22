@@ -47,16 +47,12 @@ class DB {
                 final val =
                     PDFModel.fromMap(snap.value as Map<String, dynamic>);
                 return EstanteriaModel(
-                        key: "Esta-${val.id}",
-                        nombre: val.name,
-                        libros: [
-                          LibroEstanteria(key: val.id, nombre: val.name)
-                        ],
-                        isColeection: false)
-                    .toMap();
+                  key: "Esta-${val.id}",
+                  nombre: val.name,
+                  libros: [LibroEstanteria(key: val.id, nombre: val.name)],
+                  isColeection: false,
+                ).toMap();
               }).toList());
-
-          print("nuevo");
         }
       },
     );
