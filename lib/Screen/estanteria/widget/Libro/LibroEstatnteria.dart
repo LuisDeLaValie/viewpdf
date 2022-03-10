@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'package:viewpdf/Colors/ColorA.dart';
+import 'package:viewpdf/Screen/colecon/Coleccion_Screen.dart';
 import 'package:viewpdf/Screen/estanteria/widget/Libro/portada.dart';
 import 'package:viewpdf/Screen/estanteria/widget/Libro/titulo.dart';
 import 'package:viewpdf/Screen/pdfview/MyPDFScreen.dart';
@@ -41,14 +42,7 @@ class LibroEstatnteria extends StatelessWidget {
           if (pro.isSelect) {
             pro.selcet(kei);
           } else {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => MyPDFScreen(pdf: item)),
-            ).then((value) {
-              if (onBack != null) {
-                onBack!();
-              }
-            });
+            showLibro(context);
           }
         },
         child: Stack(
@@ -67,5 +61,23 @@ class LibroEstatnteria extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void showLibro(BuildContext context) async {
+    bool iscolecion = kei.split("-").contains("Esta");
+    if (iscolecion) {
+      await Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => ColeccionScreen(kei: kei)),
+      );
+    } else {
+      await Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => MyPDFScreen(pdf: item)),
+      );
+    }
+    if (onBack != null) {
+      onBack!();
+    }
   }
 }

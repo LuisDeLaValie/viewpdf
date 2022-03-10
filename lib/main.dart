@@ -7,6 +7,7 @@ import 'db/Libro_hive.dart';
 import 'model/EstanteriaModel.dart';
 import 'model/PDFModel.dart';
 
+
 main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -26,6 +27,12 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+@override
+void initState() {
+  super.initState();
+ 
+}
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(

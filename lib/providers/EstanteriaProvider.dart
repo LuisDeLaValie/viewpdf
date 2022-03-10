@@ -9,7 +9,7 @@ class EstanteriaProvider with ChangeNotifier {
   }
 
   late Libros _libros;
-  bool _loader = true;
+  bool _loader = false;
 
   bool get loader => this._loader;
 
@@ -21,10 +21,7 @@ class EstanteriaProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> init() async {
-    this._loader = false;
-    notifyListeners();
-  }
+  
 
   Future<void> limpiarlista({List<String>? keys}) async {
     await _libros.limpiar(keys: keys);

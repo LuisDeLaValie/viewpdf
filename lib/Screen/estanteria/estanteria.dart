@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:open_as_default/open_as_default.dart';
 import 'package:provider/provider.dart';
 import 'package:viewpdf/providers/SelectProvider.dart';
 
@@ -11,7 +12,6 @@ import '../estanteria/widget/Menu/Options.dart';
 import '../estanteria/widget/Menu/optionSelct.dart';
 
 import '../../providers/EstanteriaProvider.dart';
-
 
 import 'configuracion/Configuracion.dart';
 
@@ -51,11 +51,18 @@ class _EstanteriaScreen extends StatefulWidget {
 
 class __EstanteriaScreenState extends State<_EstanteriaScreen>
     with SingleTickerProviderStateMixin {
-  
   @override
   void initState() {
     super.initState();
-    widget.provider.init();
+    // widget.provider.init();
+    OpenAsDefault.getFileIntent.then((value) {
+      print(value);
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('EL libro $value'),
+        dismissDirection: DismissDirection.up,
+        backgroundColor: Colors.green,
+      ));
+    });
   }
 
   int page = 0;
