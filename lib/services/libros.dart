@@ -80,10 +80,14 @@ class Libros {
     var libros = LibroHive.instance.box.values
         .where((item) => item.isTemporal || (keys?.contains(item.id) ?? false))
         .toList();
+
     for (var item in libros) {
-      await ManejoarPDF().eliminarPDF(item.path);
-      item.delete();
+      var res = await ManejoarPDF().eliminarPDF(item.path);
+      if (res) {
+        item.delete();
+      }
     }
+
     return libros.length;
   }
 

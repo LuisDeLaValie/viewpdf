@@ -24,6 +24,6 @@ class EstanteriaModel extends HiveObject {
 
   @override
   String toString() {
-    return 'EstanteriaModel( key: $key, libros: $libros)';
+    return 'EstanteriaModel( key: $key, nombre: $nombre  libros: $libros)';
   }
 }

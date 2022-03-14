@@ -16,39 +16,55 @@ class EstanteriaGuardados extends StatelessWidget {
   Widget build(BuildContext context) {
     final pro = Provider.of<EstanteriaProvider>(context);
 
-    final pro2 = Provider.of<SelectProvider>(context);
-
     return ValueListenableBuilder<Box<EstanteriaModel>>(
         valueListenable: Hive.box<EstanteriaModel>(EstanteriaHive.instance.name)
             .listenable(),
         builder: (context, box, widget) {
           var libros = box.values;
-          pro.guardadosKesy.clear();
+          pro.guardadosKesy = box.keys.cast<String>().toList();
+          // pro.guardadosKesy.clear();
 
           if (libros.length == 0) {
             return Center(
               child: NoLibro(),
             );
           } else {
-            return GridView.count(
-              crossAxisCount: 3,
-              crossAxisSpacing: 1.5,
-              mainAxisSpacing: 1.5,
-              childAspectRatio: 0.6,
-              children: libros.map((e) {
-                String key = e.key;
-                final sel = pro2.listaSelects.contains(key);
-                pro.guardadosKesy.add(key);
-                print(e);
-                return LibroEstatnteria(
-                  item: e.libros[0],
-                  slect: sel,
-                  kei: key,
-                  nombre: e.nombre,
-                );
-              }).toList(),
-            );
+            return _Listaaux(libros: libros.toList());
           }
         });
+  }
+}
+
+class _Listaaux extends StatelessWidget {
+  final List<EstanteriaModel> libros;
+  const _Listaaux({
+    Key? key,
+    required this.libros,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final pro2 = Provider.of<SelectProvider>(context);
+    var selectlist = pro2.listaSelects;
+
+    return GridView.count(
+      crossAxisCount: 3,
+      crossAxisSpacing: 1.5,
+      mainAxisSpacing: 1.5,
+      childAspectRatio: 0.6,
+      children: libros.map((e) {
+        String key = e.key;
+        final sel = selectlist.contains(key);
+        if (e.libros.length == 0) {
+          e.delete();
+        }
+        return LibroEstatnteria(
+          item: e.libros[0],
+          slect: sel,
+          kei: key,
+          nombre: e.nombre,
+        );
+      }).toList(),
+    );
   }
 }

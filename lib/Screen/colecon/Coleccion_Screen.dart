@@ -1,42 +1,62 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
 import 'package:viewpdf/Colors/ColorA.dart';
-import 'package:viewpdf/Screen/pdfview/MyPDFScreen.dart';
+import 'package:viewpdf/Screen/colecon/listas_colections.dart';
 import 'package:viewpdf/db/EstanteriaHive.dart';
 import 'package:viewpdf/model/EstanteriaModel.dart';
+import 'package:viewpdf/providers/Editar_colecion.dart';
 
 import '../CurpoGeneral.dart';
 import 'header.dart';
 
-class ColeccionScreen extends StatefulWidget {
+class ColeccionScreen extends StatelessWidget {
   final String kei;
+
   const ColeccionScreen({Key? key, required this.kei}) : super(key: key);
 
   @override
-  State<ColeccionScreen> createState() => _ColeccionScreenState();
+  Widget build(BuildContext context) {
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider<EditarColecionProvider>(
+            create: (_) => EditarColecionProvider()),
+      ],
+      child: _ColeccionScreen(kei: kei),
+    );
+  }
 }
 
-class _ColeccionScreenState extends State<ColeccionScreen> {
-  late EstanteriaModel estanteria;
-  @override
-  void initState() {
-    super.initState();
-    estanteria = EstanteriaHive.instance.box.get(widget.kei)!;
+class _ColeccionScreen extends StatelessWidget {
+  _ColeccionScreen({Key? key, required String kei}) : super(key: key) {
+    estanteria = EstanteriaHive.instance.box.get(kei)!;
   }
+
+  late EstanteriaModel estanteria;
 
   var librosaux;
   @override
   Widget build(BuildContext context) {
     var libros = estanteria.libros;
-    print("lirbos : ${libros.length}");
+
+    final pro = Provider.of<EditarColecionProvider>(context);
+
     return CurpoGeneral(
       titulo: 'Coleccion',
       actions: [
         IconButton(
           icon: Icon(
-            Icons.edit,
+            pro.onEdit ? Icons.edit_off : Icons.edit,
             color: ColorA.burntSienna,
           ),
-          onPressed: () {},
+          onPressed: () {
+            if (pro.onEdit) {
+              estanteria.nombre = pro.nombre;
+              estanteria.save();
+            }
+
+            pro.onEdit = !pro.onEdit;
+          },
         ),
       ],
       body: Column(
@@ -46,47 +66,7 @@ class _ColeccionScreenState extends State<ColeccionScreen> {
             path: libros[0].path,
           ),
           Expanded(
-            child: ReorderableListView.builder(
-              itemCount: 3, //libros.length,
-              onReorder: (oldIndex, newIndex) {
-                setState(() {
-                  if (newIndex > oldIndex) {
-                    newIndex -= 1;
-                  }
-                  final libro = libros.removeAt(oldIndex);
-                  libros.insert(newIndex, libro);
-                });
-              },
-              proxyDecorator: (w, s, d) {
-                var lib = libros[s];
-                return Material(
-                  child: ListTile(
-                    key: Key(lib.id),
-                    title: Text(lib.name),
-                    tileColor: ColorA.lightCyan,
-                  ),
-                );
-              },
-              itemBuilder: (context, index) {
-                var lib = libros[index];
-                return Container(
-                  key: Key(lib.id),
-                  color: ColorA.paleCerulean,
-                  margin: EdgeInsets.all(1),
-                  child: ListTile(
-                    title: Text(lib.name.split(".")[0]),
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => MyPDFScreen(pdf: lib)),
-                      );
-                    },
-                    
-                  ),
-                );
-              },
-            ),
+            child: ListasColections(estanteria: estanteria),
           ),
         ],
       ),

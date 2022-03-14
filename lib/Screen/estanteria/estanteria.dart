@@ -56,7 +56,6 @@ class __EstanteriaScreenState extends State<_EstanteriaScreen>
     super.initState();
     // widget.provider.init();
     OpenAsDefault.getFileIntent.then((value) {
-      print(value);
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text('EL libro $value'),
         dismissDirection: DismissDirection.up,
@@ -88,7 +87,7 @@ class __EstanteriaScreenState extends State<_EstanteriaScreen>
     );
   }
 
-  String tiulo = "Titulo";
+  String tiulo = "Temporal";
   void titulos(int key) {
     if (key == 0) {
       setState(() {

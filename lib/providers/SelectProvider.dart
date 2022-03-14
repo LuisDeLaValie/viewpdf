@@ -16,7 +16,7 @@ class SelectProvider with ChangeNotifier {
     bool res = this._listaSelects.contains(val);
 
     if (res) {
-      this._listaSelects.remove(res);
+      this._listaSelects.remove(val);
     } else {
       this._listaSelects.add(val);
     }

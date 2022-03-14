@@ -1,18 +1,60 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
 import 'package:viewpdf/Colors/ColorA.dart';
 import 'package:viewpdf/Screen/estanteria/widget/Libro/portada.dart';
+import 'package:viewpdf/providers/Editar_colecion.dart';
 
-class Header extends StatelessWidget {
+class Header extends StatefulWidget {
   final String title;
   final String path;
-  const Header({
+  Header({
     Key? key,
     required this.title,
     required this.path,
   }) : super(key: key);
 
   @override
+  State<Header> createState() => _HeaderState();
+}
+
+class _HeaderState extends State<Header> {
+  final controller = TextEditingController();
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    controller.text = widget.title;
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final pro = Provider.of<EditarColecionProvider>(context);
+
+    Widget textnombre = Flexible(
+      child: Text(
+        widget.title,
+        style: TextStyle(
+          fontSize: 20,
+          fontWeight: FontWeight.bold,
+          color: Colors.white,
+        ),
+      ),
+    );
+    Widget editnombre = Expanded(
+      child: Container(
+        color: Colors.white,
+        child: TextFormField(
+          initialValue: widget.title,
+          keyboardType: TextInputType.multiline,
+          maxLines: null,
+          onChanged: (value) {
+            pro.nombre = value;
+          },
+        ),
+      ),
+    );
+
     return Container(
       color: ColorA.bdazzledBlue,
       padding: EdgeInsets.all(10),
@@ -22,19 +64,10 @@ class Header extends StatelessWidget {
           SizedBox(
             width: 110,
             height: 190,
-            child: Portada(path: path),
+            child: Portada(path: widget.path),
           ),
           SizedBox(width: 10),
-          Flexible(
-            child: Text(
-              title,
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
-            ),
-          ),
+          pro.onEdit ? editnombre : textnombre,
         ],
       ),
     );

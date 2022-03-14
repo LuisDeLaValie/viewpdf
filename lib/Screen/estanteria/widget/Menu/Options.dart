@@ -1,7 +1,12 @@
+import 'dart:developer';
+
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
 import 'package:provider/provider.dart';
 import 'package:viewpdf/Screen/pdfview/MyPDFScreen.dart';
+import 'package:viewpdf/db/EstanteriaHive.dart';
+import 'package:viewpdf/model/EstanteriaModel.dart';
 import 'package:viewpdf/providers/EstanteriaProvider.dart';
 import 'package:viewpdf/providers/SelectProvider.dart';
 import 'package:viewpdf/services/libros.dart';
@@ -105,9 +110,9 @@ class OptionsGuardados extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     FloatingActionButton(
-                      onPressed: () {
+                      onPressed: () async {
                         final lis = proSelect.listaSelects;
-                        crearColeccion(lis, context);
+                        await crearColeccion(lis, context);
                         proSelect.cancel();
                       },
                       child: Icon(Icons.add_box),
@@ -130,7 +135,7 @@ class OptionsGuardados extends StatelessWidget {
     );
   }
 
-  void crearColeccion(List<String> lista, BuildContext context) {
+  Future<void> crearColeccion(List<String> lista, BuildContext context) async {
     final iscolection =
         lista.map((e) => e.split('-').contains('Esta')).toList();
 
@@ -138,7 +143,7 @@ class OptionsGuardados extends StatelessWidget {
       print('es coleccion');
     } else {
       // Libros.crearColeccion(lista);
-      showDialog(
+      await showDialog(
         context: context,
         builder: (context) {
           return _CrearColeccion(lista: lista);
@@ -155,6 +160,10 @@ class _CrearColeccion extends StatelessWidget {
   final controller = TextEditingController();
   @override
   Widget build(BuildContext context) {
+    controller.text = Hive.box<EstanteriaModel>(EstanteriaHive.instance.name)
+            .get(lista[0])
+            ?.nombre ??
+        "";
     return AlertDialog(
       title: Text('Crear coleccion'),
       content: Column(
@@ -186,7 +195,7 @@ class _CrearColeccion extends StatelessWidget {
             Libros().crearColeccion(controller.text, lista);
             Navigator.of(context).pop();
 
-            print("nombre: ${controller.text} :: lista: $lista");
+            log("nombre: ${controller.text} :: lista: $lista");
           },
         ),
       ],
