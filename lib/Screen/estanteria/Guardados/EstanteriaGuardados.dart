@@ -58,12 +58,13 @@ class _Listaaux extends StatelessWidget {
         if (e.libros.length == 0) {
           e.delete();
         }
+
         return LibroEstatnteria(
-          item: e.libros[0],
-          slect: sel,
-          kei: key,
-          nombre: e.nombre,
-        );
+            item: e.libros[0],
+            slect: sel,
+            kei: key,
+            nombre: e.nombre,
+            iscolecion: e.isColeection);
       }).toList(),
     );
   }

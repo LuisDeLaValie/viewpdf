@@ -61,6 +61,7 @@ class _Lista extends StatelessWidget {
           slect: sel,
           kei: e.key,
           nombre: e.name,
+          iscolecion: false,
         );
       }).toList(),
     );

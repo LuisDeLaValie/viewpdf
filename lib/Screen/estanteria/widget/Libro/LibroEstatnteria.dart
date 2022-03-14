@@ -14,14 +14,16 @@ class LibroEstatnteria extends StatelessWidget {
   final String kei;
   final PDFModel item;
   final bool slect;
+  final bool iscolecion;
   final Function()? onBack;
   const LibroEstatnteria({
     Key? key,
-    required this.item,
-    required this.slect,
-    this.onBack,
     required this.nombre,
     required this.kei,
+    required this.item,
+    required this.slect,
+    required this.iscolecion,
+    this.onBack,
   }) : super(key: key);
 
   void select() {}
@@ -56,6 +58,15 @@ class LibroEstatnteria extends StatelessWidget {
             if (slect)
               Container(
                 color: ColorA.burntSienna.withOpacity(0.4),
+              ),
+            if (iscolecion)
+              Positioned(
+                top: 0,
+                right: 0,
+                child: Icon(
+                  Icons.collections_bookmark_outlined,
+                  color: ColorA.burntSienna,
+                ),
               ),
           ],
         ),
