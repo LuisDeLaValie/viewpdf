@@ -95,7 +95,7 @@ class _ListasColectionsState extends State<ListasColections> {
         side: BorderSide(color: ColorA.bdazzledBlue, width: 1),
         borderRadius: BorderRadius.circular(5),
       ),
-      title: Text(libro.name.split(".")[0]),
+      title: Text(libro.name.replaceAll('.pdf', '').replaceAll('.PDF', '')),
       onTap: () {
         Navigator.push(
           context,

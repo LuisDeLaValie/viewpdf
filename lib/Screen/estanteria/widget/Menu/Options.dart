@@ -1,9 +1,11 @@
 import 'dart:developer';
 
 import 'package:animate_do/animate_do.dart';
+import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:provider/provider.dart';
+import 'package:tdtxle_inputs_flutter/inputs_tdtxle.dart';
 import 'package:viewpdf/Screen/pdfview/MyPDFScreen.dart';
 import 'package:viewpdf/db/EstanteriaHive.dart';
 import 'package:viewpdf/model/EstanteriaModel.dart';
@@ -160,25 +162,37 @@ class _CrearColeccion extends StatelessWidget {
   final controller = TextEditingController();
   @override
   Widget build(BuildContext context) {
-    controller.text = Hive.box<EstanteriaModel>(EstanteriaHive.instance.name)
-            .get(lista[0])
-            ?.nombre ??
-        "";
+    var estanteria = Hive.box<EstanteriaModel>(EstanteriaHive.instance.name);
+    var coleccion = estanteria.values.where((e) => e.isColeection).toList();
+    controller.text = estanteria.get(lista[0])?.nombre ?? "";
+
     return AlertDialog(
       title: Text('Crear coleccion'),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           Text('Seleccione un nombre para la coleccion'),
-          TextField(
-            controller: controller,
-            decoration: InputDecoration(
-              border: OutlineInputBorder(),
-              hintText: 'Nombre de la colecion',
+          SelectField(
+            settingsTextField: SelectFieldSettings(
+              controller: controller,
+              decoration: InputDecoration(
+                border: OutlineInputBorder(),
+                hintText: 'Nombre de la colecion',
+              ),
             ),
-            onChanged: (e) {
-              print(e);
-            },
+            values: coleccion
+                .map(
+                  (e) => SelectItem(
+                    value: e.key,
+                    search: e.nombre,
+                    title: Text(e.nombre),
+                    onTap: () {
+                      Libros().agregarLibros(e.key, lista);
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                )
+                .toList(),
           ),
         ],
       ),

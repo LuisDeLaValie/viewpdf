@@ -55,13 +55,7 @@ class __EstanteriaScreenState extends State<_EstanteriaScreen>
   void initState() {
     super.initState();
     // widget.provider.init();
-    OpenAsDefault.getFileIntent.then((value) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text('EL libro $value'),
-        dismissDirection: DismissDirection.up,
-        backgroundColor: Colors.green,
-      ));
-    });
+    OpenAsDefault.getFileIntent.then((value) {});
   }
 
   int page = 0;

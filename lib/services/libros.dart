@@ -70,6 +70,15 @@ class Libros {
     EstanteriaHive.instance.box.put(key, estan);
   }
 
+  Future<void> agregarLibros(dynamic key, List<String> keys) async {
+    var lib = LibroHive.instance.box.values
+        .where((element) => keys.contains(element.key))
+        .toList();
+    EstanteriaHive.instance.box.deleteAll(keys);
+
+    EstanteriaHive.instance.box.get(key)?.libros.addAll(lib);
+  }
+
   Future<List<PDFModel?>> listarColecion(String key) async {
     final res = (EstanteriaHive.instance.box.get(key)?.libros)?.toList() ?? [];
 
