@@ -24,7 +24,6 @@ dependencies:
   animate_do: ^2.0.0
   convex_bottom_bar: ^3.0.0
   cupertino_icons: ^1.0.3
-  dropdown_search: ^2.0.1
   file_picker: ^3.0.3
   flutter:
     sdk: flutter
@@ -36,9 +35,10 @@ dependencies:
   path: ^1.8.0
   path_provider: ^2.0.2
   provider: ^5.0.0
+  syncfusion_flutter_pdfviewer: ^19.2.47-beta
   tdtxle_inputs_flutter:
     path: /Users/emiliopartida/Developer/DevLab/Personal/Proyectos/inputs_tdtxle
-  syncfusion_flutter_pdfviewer: ^19.2.47-beta
+  url_launcher: ^6.0.20
 
 dev_dependencies:
   build_runner: ^2.1.7

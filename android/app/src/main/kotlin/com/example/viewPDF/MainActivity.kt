@@ -1,4 +1,4 @@
-package com.example.viewPDF
+package com.TDTxLe.viewPDF
 
 import io.flutter.embedding.android.FlutterActivity
 

@@ -1,7 +1,6 @@
 import 'dart:developer';
 
 import 'package:animate_do/animate_do.dart';
-import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:provider/provider.dart';
