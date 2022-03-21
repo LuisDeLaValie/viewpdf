@@ -21,8 +21,6 @@ class EstanteriaProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  
-
   Future<void> limpiarlista({List<String>? keys}) async {
     await _libros.limpiar(keys: keys);
   }
@@ -44,7 +42,5 @@ class EstanteriaProvider with ChangeNotifier {
     return {'actualizar': false};
   }
 
-  Future<void> guardarpdf(List<String> keys) async {
-    await _libros.guardar(keys);
-  }
+  Future<void> guardarpdf(List<String> keys) => _libros.guardar(keys);
 }

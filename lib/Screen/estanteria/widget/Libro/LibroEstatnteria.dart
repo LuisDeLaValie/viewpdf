@@ -75,7 +75,7 @@ class LibroEstatnteria extends StatelessWidget {
   }
 
   void showLibro(BuildContext context) async {
-    bool iscolecion = kei.split("-").contains("Esta");
+    bool iscolecion = kei.split("-").contains("Colec");
     if (iscolecion) {
       await Navigator.push(
         context,

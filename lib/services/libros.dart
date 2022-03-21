@@ -34,22 +34,24 @@ class Libros {
   }
 
   Future<void> guardar(List<String> keys) async {
-    for (var item in LibroHive.instance.box.values) {
-      if (keys.contains(item.id)) {
-        if (item.isTemporal) {
-          item.isTemporal = false;
-          item.save();
-        }
+    var items = LibroHive.instance.box.values
+        .where((element) => keys.contains(element.id));
 
-        var estant = EstanteriaModel(
-            id: "Esta-${item.id}",
-            nombre: item.name,
-            isColeection: false,
-            libros: HiveList(LibroHive.instance.box, objects: [item]));
+    var updates = <dynamic, PDFModel>{
+      for (var e in items) e.key: e..isTemporal = false
+    };
+    LibroHive.instance.box.putAll(updates);
 
-        EstanteriaHive.instance.box.put(item.key, estant);
-      }
-    }
+    var adds = <dynamic, EstanteriaModel>{
+      for (var e in items)
+        "Esta-${e.key}": EstanteriaModel(
+          id: "Esta-${e.id}",
+          nombre: e.name,
+          isColeection: false,
+          libros: HiveList(LibroHive.instance.box, objects: [e]),
+        )
+    };
+    EstanteriaHive.instance.box.putAll(adds);
   }
 
   Future<void> crearColeccion(String nombre, List<String> keys) async {
@@ -59,7 +61,7 @@ class Libros {
     EstanteriaHive.instance.box.deleteAll(keys);
 
     final fecha = DateTime.now().millisecondsSinceEpoch;
-    String key = "Esta-$fecha-" + _generateRandomString(4);
+    String key = "Colec-$fecha-" + _generateRandomString(4);
     var estan = EstanteriaModel(
       id: key,
       nombre: nombre,

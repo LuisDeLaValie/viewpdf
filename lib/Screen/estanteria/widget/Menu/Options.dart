@@ -139,7 +139,7 @@ class OptionsGuardados extends StatelessWidget {
 
   Future<void> crearColeccion(List<String> lista, BuildContext context) async {
     final iscolection =
-        lista.map((e) => e.split('-').contains('Esta')).toList();
+        lista.map((e) => e.split('-').contains('Colec')).toList();
 
     if (iscolection.contains(true)) {
       print('es coleccion');

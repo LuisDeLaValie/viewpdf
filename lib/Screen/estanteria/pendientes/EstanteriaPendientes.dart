@@ -22,7 +22,7 @@ class EstanteriaPendientes extends StatelessWidget {
       valueListenable: Hive.box<PDFModel>(LibroHive.instance.name).listenable(),
       builder: (context, box, widget) {
         var list = box.values.where((element) => element.isTemporal).toList();
-        pro.pendienteKes = box.keys.cast<String>().toList();
+        pro.pendienteKes = list.map((element) => element.id).toList();
 
         if (list.length == 0) {
           return Center(

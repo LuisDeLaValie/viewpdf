@@ -30,6 +30,7 @@ class _HeaderState extends State<Header> {
   @override
   Widget build(BuildContext context) {
     final pro = Provider.of<EditarColecionProvider>(context);
+    pro.nombre = widget.title;
 
     Widget textnombre = Flexible(
       child: Text(
