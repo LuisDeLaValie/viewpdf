@@ -19,7 +19,7 @@ class MainMenu extends StatelessWidget {
       items: [
         TabItem(icon: Icons.menu_book, title: 'Temporal'),
         TabItem(icon: Icons.auto_stories, title: 'guardados'),
-        // TabItem(icon: Icons.tune, title: 'Configurar'),
+        TabItem(icon: Icons.tune, title: 'Configurar'),
       ],
       onTap: (val) {
         onTap(val);

@@ -10,7 +10,7 @@ class ManejoarPDF {
     try {
       final document = await PdfDocument.openFile(path);
       final page = await document.getPage(1);
-      final image = await page.render(width: page.width, height: page.height);      
+      final image = await page.render(width: page.width, height: page.height);
       await page.close();
 
       final String newpath = (await getApplicationDocumentsDirectory()).path;
@@ -25,15 +25,20 @@ class ManejoarPDF {
     }
   }
 
-  Future<String> moverPdf(String path, String folder) async {
+  Future<String> moverPdf(String path, [String? folder]) async {
     try {
       File file = new File(path);
       String name = basename(path);
+      String newpath = (await getApplicationDocumentsDirectory()).path;
 
-      final String newpath = (await getApplicationDocumentsDirectory()).path;
-      await Directory("$newpath/$folder").create();
-      File file2 = await file.copy("$newpath/$folder/$name");
-      // await file.delete();
+      newpath += "/libros";
+      if (folder != null) newpath += "/$folder";
+
+      var newdirectoro = await Directory(newpath).create(recursive: true);
+      var ruta = "${newdirectoro.path}/$name";
+      File file2 = await file.copy(ruta);
+
+      if (folder != null) await file.delete();
 
       return file2.path;
     } catch (e) {

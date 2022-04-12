@@ -27,6 +27,7 @@ class ColeccionScreen extends StatelessWidget {
   }
 }
 
+// ignore: must_be_immutable
 class _ColeccionScreen extends StatelessWidget {
   _ColeccionScreen({Key? key, required String kei}) : super(key: key) {
     estanteria = EstanteriaHive.instance.box.get(kei)!;

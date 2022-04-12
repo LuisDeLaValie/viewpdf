@@ -69,14 +69,13 @@ class _ListasColectionsState extends State<ListasColections> {
                 color: ColorA.burntSienna,
               ),
               onPressed: () {
-                if (widget.estanteria.libros.length - 1 < 1) {
-                  Libros().eliminarColeccion([widget.estanteria.id], false);
+                if ((widget.estanteria.libros.length - 1) == 1) {
+                  Libros().eliminarColeccion([widget.estanteria.id]);
                   Navigator.pop(context);
                 } else {
+                  Libros().eliminarLibroColeccion(
+                      widget.estanteria.id, widget.estanteria.libros[index].id);
                   setState(() {
-                    widget.estanteria.libros.removeAt(index);
-                    Libros().guardar([widget.estanteria.libros[index].id]);
-
                     widget.estanteria.libros.removeAt(index);
                   });
                 }

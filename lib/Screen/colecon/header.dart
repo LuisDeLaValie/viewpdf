@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import 'package:viewpdf/Colors/ColorA.dart';
 import 'package:viewpdf/Screen/estanteria/widget/Libro/portada.dart';
@@ -23,7 +22,6 @@ class _HeaderState extends State<Header> {
   final controller = TextEditingController();
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     controller.text = widget.title;
   }
@@ -69,21 +67,7 @@ class _HeaderState extends State<Header> {
             child: Portada(path: widget.path),
           ),
           SizedBox(width: 10),
-          Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              pro.onEdit ? editnombre : textnombre,
-              FloatingActionButton(
-                onPressed: () {
-                  final Uri uri = Uri.file(widget.path);
-                  print(uri.toString());
-                  launch("file:///data/user/0/com.TDTxLe.viewPDF/app_flutter/1647890449041-shha");
-                },
-                child:
-                    Icon(Icons.edit, color: Color.fromARGB(255, 161, 47, 47)),
-              ),
-            ],
-          ),
+          pro.onEdit ? editnombre : textnombre,
         ],
       ),
     );

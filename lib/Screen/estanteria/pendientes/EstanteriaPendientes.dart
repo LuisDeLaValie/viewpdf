@@ -16,7 +16,6 @@ class EstanteriaPendientes extends StatelessWidget {
   Widget build(BuildContext context) {
     final pro = Provider.of<EstanteriaProvider>(context);
 
-    final pro2 = Provider.of<SelectProvider>(context);
 
     return ValueListenableBuilder<Box<PDFModel>>(
       valueListenable: Hive.box<PDFModel>(LibroHive.instance.name).listenable(),

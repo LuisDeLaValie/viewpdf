@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
@@ -207,8 +205,6 @@ class _CrearColeccion extends StatelessWidget {
           onPressed: () {
             Libros().crearColeccion(controller.text, lista);
             Navigator.of(context).pop();
-
-            log("nombre: ${controller.text} :: lista: $lista");
           },
         ),
       ],

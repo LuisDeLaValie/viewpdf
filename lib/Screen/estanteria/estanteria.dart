@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:viewpdf/providers/SelectProvider.dart';
 
 import '../CurpoGeneral.dart';
+import '../configuracion/Configuracion.dart';
 import '../estanteria/Guardados/EstanteriaGuardados.dart';
 import '../estanteria/pendientes/EstanteriaPendientes.dart';
 import '../estanteria/widget/Menu/MainMenu.dart';
@@ -12,8 +13,6 @@ import '../estanteria/widget/Menu/Options.dart';
 import '../estanteria/widget/Menu/optionSelct.dart';
 
 import '../../providers/EstanteriaProvider.dart';
-
-import 'configuracion/Configuracion.dart';
 
 class EstanteriaScreen extends StatelessWidget {
   const EstanteriaScreen({Key? key}) : super(key: key);
