@@ -6,7 +6,6 @@ import 'package:viewpdf/Colors/ColorA.dart';
 import 'package:viewpdf/Screen/pdfview/ViewPDF.dart';
 
 import 'package:viewpdf/Screen/pdfview/page.dart';
-import 'package:viewpdf/model/PDFModel.dart';
 import 'package:viewpdf/providers/PDFProvider.dart';
 
 import 'zoom.dart';
