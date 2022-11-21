@@ -33,6 +33,9 @@ class LibrosModel {
   LibrosModel(this.key, this.titulo, this.sinopsis, this.autores,
       this.editorail, this.path, this.paginacion, this.origen, this.creado);
 
+  String get portada =>
+      "https://lh3.google.com/u/0/d/$path=w200-h190-p-k-nu-iv1";
+
   factory LibrosModel.fromApi(Map<String, dynamic> data) {
     return LibrosModel(
       data["key"],

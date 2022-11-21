@@ -17,13 +17,5 @@ class CrearLibroProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  void getInfoApi() async {
-    var request = http.Request('GET', Uri.http('localhost:80', '/libros'));
-    http.StreamedResponse response =
-        await request.send().timeout(Duration(milliseconds: 15000));
 
-    var res = jsonDecode(await response.stream.bytesToString());
-
-    print(res);
-  }
 }

@@ -17,7 +17,6 @@ class HomeScreenWeb extends StatefulWidget {
 class _HomeScreenWebState extends State<HomeScreenWeb> {
   @override
   void initState() {
-    context.read<CrearLibroProvider>().getInfoApi();
     super.initState();
   }
 
