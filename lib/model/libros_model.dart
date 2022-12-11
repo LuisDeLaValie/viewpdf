@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:hive/hive.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:pdfx/pdfx.dart';
 
 import 'autor_model.dart';
 
@@ -30,44 +31,79 @@ class LibrosModel {
   @HiveField(8)
   final DateTime creado;
 
-  LibrosModel(this.key, this.titulo, this.sinopsis, this.autores,
-      this.editorail, this.path, this.paginacion, this.origen, this.creado);
+  LibrosModel({
+    this.key,
+    required this.titulo,
+    this.sinopsis,
+    this.autores,
+    this.editorail,
+    this.path,
+    this.paginacion,
+    this.origen,
+    required this.creado,
+  });
 
   String get portada =>
       "https://lh3.google.com/u/0/d/$path=w200-h190-p-k-nu-iv1";
 
   factory LibrosModel.fromApi(Map<String, dynamic> data) {
     return LibrosModel(
-      data["key"],
-      data["titulo"],
-      data["sipnosis"],
-      data["autores"] != null
+      key: data["key"],
+      titulo: data["titulo"],
+      sinopsis: data["sipnosis"],
+      autores: data["autores"] != null
           ? (data["autores"] as List).map((e) => AutorModel.fromApi(e)).toList()
           : null,
-      data["editorial"],
-      // data["path"],
-      data["-"],
-      data["paginacion"] != null
+      editorail: data["editorial"],
+      path: data["-"],
+      paginacion: data["paginacion"] != null
           ? Paginacion.fromApi(data["paginacion"])
           : null,
-      data["origen"] != null ? Origen.fromApi(data["origen"]) : null,
-      DateTime.parse(data["creado"]),
+      origen: data["origen"] != null ? Origen.fromApi(data["origen"]) : null,
+      creado: DateTime.parse(data["creado"]),
     );
   }
 
-  // factory LibrosModel.importar(String file) {
-  //   return LibrosModel(
-  //     key,
-  //     titulo,
-  //     sinopsis,
-  //     autores,
-  //     editorail,
-  //     path,
-  //     paginacion,
-  //     origen,
-  //     creado,
-  //   );
-  // }
+  static Future<LibrosModel> importar(String file) async {
+    // libro = libro.copyWith(
+    //   titulo: file.split("/").last.replaceFirst('.\W{0,3}', ''),
+    // );
+
+    final document = await PdfDocument.openFile('path/to/file/on/device');
+    var libro = LibrosModel(
+      titulo: document.sourceName,
+      paginacion: Paginacion(
+        0,
+        document.pagesCount,
+      ),
+      creado: DateTime.now(),
+    );
+
+    return libro;
+  }
+
+  LibrosModel copyWith({
+    String? titulo,
+    String? sinopsis,
+    List<AutorModel>? autores,
+    String? editorail,
+    String? path,
+    Paginacion? paginacion,
+    Origen? origen,
+    DateTime? creado,
+  }) {
+    return LibrosModel(
+      key: this.key,
+      titulo: titulo ?? this.titulo,
+      sinopsis: sinopsis ?? this.sinopsis,
+      autores: autores ?? this.autores,
+      editorail: editorail ?? this.editorail,
+      path: path ?? this.path,
+      paginacion: paginacion ?? this.paginacion,
+      origen: origen ?? this.origen,
+      creado: creado ?? this.creado,
+    );
+  }
 }
 
 class Paginacion {

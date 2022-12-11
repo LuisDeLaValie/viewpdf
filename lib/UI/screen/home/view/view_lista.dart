@@ -38,9 +38,14 @@ class _ViewListaState extends State<ViewLista> {
   }
 
   Future<List<LibrosModel>> getInfoApi() async {
-    var request = http.Request('GET', Uri.http('localhost:80', '/libros'));
-    http.StreamedResponse response =
-        await request.send().timeout(Duration(milliseconds: 15000));
+    var request = http.Request(
+      'GET',
+      Uri.http(
+        "localhost",
+        "/libros",
+      ),
+    );
+    var response = await request.send().timeout(Duration(milliseconds: 30000));
 
     var res = jsonDecode(await response.stream.bytesToString()) as List;
 

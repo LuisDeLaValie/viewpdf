@@ -24,18 +24,17 @@ dependencies:
   animate_do: ^2.0.0
   convex_bottom_bar: ^3.0.0
   cupertino_icons: ^1.0.3
-  file_manager: ^1.0.0
-  file_picker: ^3.0.3
+  file_picker: ^5.2.2
   fluro: ^2.0.4
   flutter:
     sdk: flutter
   hive: ^2.0.5
   hive_flutter: ^1.1.0
   http: ^0.13.5
-  native_pdf_renderer: ^3.1.0
   open_as_default: ^0.0.3
   path: ^1.8.0
   path_provider: ^2.0.2
+  pdfx: ^2.3.0
   permission_handler: ^9.2.0
   provider: ^5.0.0
   syncfusion_flutter_pdfviewer: ^19.2.47-beta
