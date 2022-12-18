@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:tdtxle_inputs_flutter/inputs/img_perfil.dart';
-import 'package:viewpdf/model/libros_model.dart';
 
 class PortadaLibro extends StatelessWidget {
-  final LibrosModel libro;
-  const PortadaLibro({Key? key, required this.libro}) : super(key: key);
+  final String titulo;
+  final String portada;
+  const PortadaLibro({
+    Key? key,
+    required this.titulo,
+    required this.portada,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -19,13 +23,13 @@ class PortadaLibro extends StatelessWidget {
               left: 0,
               right: 0,
               bottom: 0,
-              child: ImagenPerfil(imgPath: libro.portada),
+              child: ImagenPerfil(imgPath: portada),
             ),
             Positioned(
               left: 0,
               right: 0,
               bottom: 0,
-              child: Text(libro.titulo),
+              child: Text(titulo),
             ),
           ],
         ),

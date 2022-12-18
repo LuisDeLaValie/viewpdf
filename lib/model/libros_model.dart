@@ -7,61 +7,57 @@ import 'package:path_provider/path_provider.dart';
 import 'package:pdfx/pdfx.dart';
 
 import 'autor_model.dart';
+import 'estanteria_model.dart';
 
-// part 'libros_model.g.dart';
+part 'libros_model.g.dart';
+part '../db/libros_db.dart';
 
 @HiveType(typeId: 0)
-class LibrosModel {
+class LibrosModel extends HiveObject implements EstanteriaModel {
   @HiveField(0)
-  final String? key;
+  late String? key;
   @HiveField(1)
-  final String titulo;
+  late String titulo;
   @HiveField(2)
-  final String? sinopsis;
+  late String? sinopsis;
   @HiveField(3)
-  final List<AutorModel>? autores;
+  late HiveList<AutorModel>? autores;
   @HiveField(4)
-  final String? editorail;
+  late String? editorail;
   @HiveField(5)
-  final String? path;
+  late String? path;
   @HiveField(6)
-  final Paginacion? paginacion;
+  late Paginacion? paginacion;
   @HiveField(7)
-  final Origen? origen;
+  late Origen? origen;
   @HiveField(8)
-  final DateTime creado;
+  late DateTime? creado;
 
-  LibrosModel({
-    this.key,
-    required this.titulo,
-    this.sinopsis,
-    this.autores,
-    this.editorail,
-    this.path,
-    this.paginacion,
-    this.origen,
-    required this.creado,
-  });
+  LibrosModel();
 
   String get portada =>
       "https://lh3.google.com/u/0/d/$path=w200-h190-p-k-nu-iv1";
 
   factory LibrosModel.fromApi(Map<String, dynamic> data) {
-    return LibrosModel(
-      key: data["key"],
-      titulo: data["titulo"],
-      sinopsis: data["sipnosis"],
-      autores: data["autores"] != null
-          ? (data["autores"] as List).map((e) => AutorModel.fromApi(e)).toList()
-          : null,
-      editorail: data["editorial"],
-      path: data["-"],
-      paginacion: data["paginacion"] != null
+    List<AutorModel>? autores = (data["autores"] as List)
+        .map((e) => AutorModel.fromApi(e)..save())
+        .toList();
+
+    var aux = LibrosModel()
+      ..key = data["key"]
+      ..titulo = data["titulo"]
+      ..sinopsis = data["sipnosis"]
+      ..autores = data["autores"] != null
+          ? HiveList(AutorDB.getBox(), objects: autores)
+          : null
+      ..editorail = data["editorial"]
+      ..path = data["-"]
+      ..paginacion = data["paginacion"] != null
           ? Paginacion.fromApi(data["paginacion"])
-          : null,
-      origen: data["origen"] != null ? Origen.fromApi(data["origen"]) : null,
-      creado: DateTime.parse(data["creado"]),
-    );
+          : null
+      ..origen = data["origen"] != null ? Origen.fromApi(data["origen"]) : null
+      ..creado = DateTime.parse(data["creado"]);
+    return aux;
   }
 
   static Future<LibrosModel> importar(String file) async {
@@ -69,46 +65,31 @@ class LibrosModel {
     //   titulo: file.split("/").last.replaceFirst('.\W{0,3}', ''),
     // );
 
-    final document = await PdfDocument.openFile('path/to/file/on/device');
-    var libro = LibrosModel(
-      titulo: document.sourceName,
-      paginacion: Paginacion(
-        0,
-        document.pagesCount,
-      ),
-      creado: DateTime.now(),
-    );
+    var document = await PdfDocument.openFile('path/to/file/on/device');
+    var libro = LibrosModel()
+      ..titulo = document.sourceName
+      ..paginacion = Paginacion(0, document.pagesCount)
+      ..creado = DateTime.now();
 
     return libro;
   }
 
-  LibrosModel copyWith({
-    String? titulo,
-    String? sinopsis,
-    List<AutorModel>? autores,
-    String? editorail,
-    String? path,
-    Paginacion? paginacion,
-    Origen? origen,
-    DateTime? creado,
-  }) {
-    return LibrosModel(
-      key: this.key,
-      titulo: titulo ?? this.titulo,
-      sinopsis: sinopsis ?? this.sinopsis,
-      autores: autores ?? this.autores,
-      editorail: editorail ?? this.editorail,
-      path: path ?? this.path,
-      paginacion: paginacion ?? this.paginacion,
-      origen: origen ?? this.origen,
-      creado: creado ?? this.creado,
-    );
+  @override
+  Future<void> save() {
+    if (box != null) {
+      return box!.put(key, this);
+    } else {
+      return LibrosDb.getBox().put(key, this);
+    }
   }
 }
 
+@HiveType(typeId: 1)
 class Paginacion {
-  final int to;
-  final int end;
+  @HiveField(0)
+  late int to;
+  @HiveField(1)
+  late int end;
 
   Paginacion(this.to, this.end);
   factory Paginacion.fromApi(Map<String, dynamic> data) {
@@ -119,9 +100,12 @@ class Paginacion {
   }
 }
 
+@HiveType(typeId: 2)
 class Origen {
-  final String nombre;
-  final String url;
+  @HiveField(0)
+  late String nombre;
+  @HiveField(1)
+  late String url;
 
   Origen(this.nombre, this.url);
 
@@ -134,20 +118,20 @@ class Origen {
 }
 
 class FileManager {
-  final String path;
+  late String path;
 
   FileManager(this.path);
 
 /* Future<String> crearPortada(String path, String folder) async {
     try {
-      final document = await PdfDocument.openFile(path);
-      final page = await document.getPage(1);
-      final image = await page.render(width: page.width, height: page.height);
+      late document = await PdfDocument.openFile(path);
+      late page = await document.getPage(1);
+      late image = await page.render(width: page.width, height: page.height);
       await page.close();
 
-      final String newpath = (await getApplicationDocumentsDirectory()).path;
+      late String newpath = (await getApplicationDocumentsDirectory()).path;
       await Directory("$newpath/$folder").create();
-      final file1 = File("$newpath/$folder/thumbnail.png");
+      late file1 = File("$newpath/$folder/thumbnail.png");
       await file1.writeAsBytes(image!.bytes);
 
       return file1.path;
