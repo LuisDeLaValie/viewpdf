@@ -32,7 +32,7 @@ class MyApp extends StatelessWidget {
       ...DetallesHendler.router,
       ...CrearHandler.router,
     ],
-    redirect: (context, state) {
+    /* redirect: (context, state) {
       var lista = [
         ...HomeHandler.router,
         ...DetallesHendler.router,
@@ -43,7 +43,7 @@ class MyApp extends StatelessWidget {
       } else {
         return "/inicio";
       }
-    },
+    }, */
   );
 
   @override

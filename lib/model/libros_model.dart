@@ -32,7 +32,10 @@ class LibrosModel extends HiveObject implements EstanteriaModel {
   late Origen? origen;
   @HiveField(8)
   late DateTime? creado;
-
+  @HiveField(9)
+  late String? descargar;
+  @HiveField(10)
+  late String? ver;
   LibrosModel();
 
   String get portada =>
@@ -46,12 +49,14 @@ class LibrosModel extends HiveObject implements EstanteriaModel {
     var aux = LibrosModel()
       ..key = data["key"]
       ..titulo = data["titulo"]
-      ..sinopsis = data["sipnosis"]
+      ..sinopsis = data["Sinopsis"]
       ..autores = data["autores"] != null
           ? HiveList(AutorDB.getBox(), objects: autores)
           : null
       ..editorail = data["editorial"]
       ..path = data["-"]
+      ..descargar = data['descargar']
+      ..ver = data['ver']
       ..paginacion = data["paginacion"] != null
           ? Paginacion.fromApi(data["paginacion"])
           : null

@@ -1,5 +1,5 @@
-
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 import 'package:viewpdf/UI/screen/home/widget/portada_libro.dart';
@@ -30,9 +30,17 @@ class ViewLista extends StatelessWidget {
         itemBuilder: (_, key) {
           var data = esta[key];
           if (data is LibrosModel) {
-            return PortadaLibro(
-              titulo: data.titulo,
-              portada: data.portada,
+            return InkWell(
+              onTap: () {
+                context.goNamed(
+                  "detallesLibro",
+                  params: {'id': data.key!},
+                );
+              },
+              child: PortadaLibro(
+                titulo: data.titulo,
+                portada: data.portada,
+              ),
             );
           } else if (data is ColecionModel) {
             return PortadaLibro(
