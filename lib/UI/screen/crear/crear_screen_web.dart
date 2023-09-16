@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:viewpdf/UI/shared/layout/layout_home.dart';
@@ -33,12 +35,18 @@ class CrearScreenWeb extends StatelessWidget {
                         backgroundColor: ColorA.burntSienna,
                       ),
                       onPressed: () async {
-                        FilePickerResult? result =
-                            await FilePicker.platform.pickFiles();
-
+                        var result = await FilePicker.platform.pickFiles();
+                        print("nombre: ${result?.names}");
                         if (result != null) {
-                          var libros =
-                              LibrosModel.importar(result.files.single.path!);
+                          var bits = result.files.first.bytes;
+                          if (bits != null) {
+                            print("entrando al archivo");
+                            var archivo = File.fromRawPath(bits);
+                            print("path: ${archivo.uri}");
+                            print("ARCHO MOSTRADO");
+                          }
+                          // var libros = await LibrosModel.importar();
+
                         }
                       },
                       child: Text("Importar Libor"),
