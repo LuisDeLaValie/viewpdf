@@ -6,6 +6,6 @@ Este proyecto presenta una aplicación personal desarrollada en Flutter para la 
 
 **vista previa**
 
-<img src="./vista%20home.jpeg" style="height: 300px; margin: 5px;">
-<img src="./tmos%20del%20ibro.jpeg" style="height: 300px; margin: 5px;">
-<img src="./vista%20pdf.jpeg" style="height: 300px; margin: 5px;">
+<img src="./vista%20home.jpeg" height="300px" alt="vista home" style="margin: 5px;">
+<img src="./tmos%20del%20ibro.jpeg" height="300px" alt="tomos del libro" style="margin: 5px;">
+<img src="./vista%20pdf.jpeg" height="300px" alt="leer pdf" style="margin: 5px;">
